@@ -1,0 +1,42 @@
+@import "tailwindcss";
+
+/* Baris ini wajib agar mode malam bisa diatur pakai JavaScript */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+    /* Palet Warna Baru dari Gambar */
+    --color-blue: #377EC0;
+    --color-darkblue: #0D2552;
+    --color-teal: #12BAAA;
+    --color-lightblue: #9FD2D6;
+    --color-yellow: #FBDF54;
+    --color-orange: #F7891F;
+    --color-red: #F04F52;
+    --color-sky1: #A6F4FF;
+    --color-sky2: #E1FCFF;
+    --color-sky3: #D0FBFF;
+    --color-sky4: #37009D;
+    --color-sky5: #6670FF;
+    --color-sky6: #7143DE;
+
+    --font-quicksand: "Quicksand", sans-serif;
+
+    --animate-slide-up: slide-up 0.8s ease-out forwards;
+    --animate-slide-up-bg: slide-up-bg 1s ease-out forwards;
+    --animate-pop-in: pop-in 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+
+    @keyframes slide-up {
+        0% { opacity: 0; transform: translateY(40px); }
+        100% { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slide-up-bg {
+        0% { opacity: 0; transform: translateY(60px); }
+        100% { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pop-in {
+        0% { opacity: 0; transform: scale(0.5); }
+        100% { opacity: 1; transform: scale(1); }
+    }
+}
