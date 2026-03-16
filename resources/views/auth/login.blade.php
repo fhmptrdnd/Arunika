@@ -48,16 +48,25 @@
             @csrf
 
             <div>
-                <label class="block text-gray-600 mb-2 font-semibold">Email Anda</label>
-                <input type="email" name="email" placeholder="janedoe@gmail.com"
-                       class="w-full px-6 py-4 rounded-2xl border-2 border-gray-200 focus:border-blue outline-none transition-colors text-lg">
-            </div>
+                    <label class="block text-gray-500 mb-1 text-sm font-semibold ml-2">Email atau Username Anak</label>
 
-            <div>
-                <label class="block text-gray-600 mb-2 font-semibold">Password</label>
-                <input type="password" name="password" placeholder="••••••••••"
-                       class="w-full px-6 py-4 rounded-2xl border-2 border-gray-200 focus:border-blue outline-none transition-colors text-lg">
-            </div>
+                    <input type="text" name="login" value="{{ old('login') }}" placeholder="janedoe@gmail.com atau aruna123"
+                           class="w-full px-5 py-3 rounded-full border-2 border-gray-200 focus:border-[#12A0D7] outline-none transition-colors">
+
+                    @error('login')
+                        <p class="text-red-500 text-sm mt-1 ml-2 font-bold">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div>
+                    <label class="block text-gray-500 mb-1 text-sm font-semibold ml-2">Password</label>
+                    <input type="password" name="password" placeholder="••••••••••"
+                           class="w-full px-5 py-3 rounded-full border-2 border-gray-200 focus:border-[#12A0D7] outline-none transition-colors">
+
+                    @error('password')
+                        <p class="text-red-500 text-sm mt-1 ml-2 font-bold">{{ $message }}</p>
+                    @enderror
+                </div>
 
             {{-- <div>
                 <label class="block text-gray-600 mb-2 font-semibold">Kode Sekolah (Jika ada)</label>

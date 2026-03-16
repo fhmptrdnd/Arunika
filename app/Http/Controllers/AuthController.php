@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
@@ -23,7 +24,12 @@ class AuthController extends Controller
         return view('auth.register-admin');
     }
 
-    // REGISTER ADMIN / GURU
+    public function registerParent()
+    {
+        return view('auth.register-parent');
+    }
+
+    // PROSES REGISTER ADMIN
     public function processRegisterAdmin(Request $request)
     {
         $validated = $request->validate([
@@ -31,24 +37,22 @@ class AuthController extends Controller
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:8',
             'school_name' => 'required',
-            'class_code' => 'nullable|exists:users,class_code',
+            'school_code' => 'nullable|unique:users,school_code',
         ], [
             'name.required' => 'Nama wajib diisi ya!',
             'email.required' => 'Email wajib diisi ya!',
-            'email.email' => 'Ups! Format emailnya sepertinya kurang tepat.',
-            'password.required' => 'Password tidak boleh kosong!',
-            'school_name.required' => 'Nama Sekolah wajib diisi.',
             'email.unique' => 'Email ini sudah terdaftar.',
+            'password.required' => 'Password tidak boleh kosong!',
             'password.min' => 'Password minimal harus 8 karakter.',
-            'class_code.exists' => 'Ups! Kode Kelas tidak ditemukan. Kosongkan saja jika ingin mendaftarkan kelas baru.',
+            'school_name.required' => 'Nama Sekolah wajib diisi.',
+            'school_code.unique' => 'Kode Kelas ini sudah dipakai sekolah lain. Silakan buat yang baru atau kosongkan.',
         ]);
 
-        $kodeKelas = $request->class_code;
+        $kodeKelas = $request->school_code;
 
         if (empty($kodeKelas)) {
             $kodeKelas = strtoupper(Str::random(6));
-
-            while (User::where('class_code', $kodeKelas)->exists()) {
+            while (User::where('school_code', $kodeKelas)->exists()) {
                 $kodeKelas = strtoupper(Str::random(6));
             }
         }
@@ -59,80 +63,126 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
             'role' => 'admin',
             'school_name' => $request->school_name,
-            'class_code' => $kodeKelas,
+            'school_code' => $kodeKelas,
         ]);
 
         Auth::login($user);
 
-        return redirect('/beranda');
+        return redirect('/admin/dashboard');
     }
 
-    public function registerParent() {
-        return view('auth.register-parent');
-    }
-
-
-    // REGISTER ORANG TUA
+    // PROSES REGISTER ORANG TUA (MULTI-ANAK & CUSTOM USERNAME)
     public function processRegisterParent(Request $request)
     {
-        $validated = $request->validate([
+        $request->validate([
             'name' => 'required',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:8',
-            'child_name' => 'required',
-            'class_age' => 'required',
-            'class_code' => 'required|exists:users,class_code',
+            'school_code' => 'nullable|exists:users,school_code',
+
+            'children' => 'required|array|min:1',
+            'children.*.name' => 'required|string',
+            'children.*.username' => 'required|string|unique:users,username',
+            'children.*.class_age' => 'required|string',
         ], [
-            'name.required' => 'Nama wali/orang tua wajib diisi ya!',
-            'email.unique' => 'Email ini sudah terdaftar, silakan gunakan email lain atau login.',
-            'email.required' => 'Email wajib diisi.',
-            'password.min' => 'Password minimal harus 8 karakter ya!',
-            'password.required' => 'Password wajib diisi.',
-            'child_name.required' => 'Nama Anak wajib diisi.',
-            'class_age.required' => 'Kelas/Usia wajib diisi.',
-            'class_code.required' => 'Kode Kelas wajib diisi.',
-            'class_code.exists' => 'Ups! Kode Kelas tidak terdaftar. Pastikan kodenya benar.',
+            'name.required' => 'Nama wali wajib diisi.',
+            'email.unique' => 'Email ini sudah terdaftar.',
+            'password.min' => 'Password minimal 8 karakter.',
+            'school_code.exists' => 'Kode Kelas tidak terdaftar.',
+            'children.*.name.required' => 'Nama anak wajib diisi.',
+            'children.*.username.required' => 'Username anak wajib diisi.',
+            'children.*.username.unique' => 'Oops! Ada username anak yang sudah dipakai orang lain.',
+            'children.*.class_age.required' => 'Kelas anak wajib dipilih.',
         ]);
 
-        $kelasTerkait = User::where('class_code', $request->class_code)->first();
-        $namaKelas = $kelasTerkait ? $kelasTerkait->school_name : null;
+        $namaSekolah = null;
+        if (!empty($request->school_code)) {
+            $sekolahTerkait = User::where('school_code', $request->school_code)->first();
+            $namaSekolah = $sekolahTerkait ? $sekolahTerkait->school_name : null;
+        }
 
-        $user = User::create([
+        // BUAT AKUN ORANG TUA
+        $parent = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role' => 'parent',
-            'child_name' => $request->child_name,
-            'class_age' => $request->class_age,
-            'class_code' => $request->class_code,
-            'school_name' => $namaKelas,
+            'school_code' => $request->school_code,
+            'school_name' => $namaSekolah,
         ]);
 
-        Auth::login($user);
+        // BUAT AKUN UNTUK MASING-MASING ANAK
+        foreach ($request->children as $child) {
+            User::create([
+                'name' => $child['name'],
+                'username' => strtolower(trim($child['username'])),
+                'password' => Hash::make($request->password),
+                'role' => 'student',
+                'parent_id' => $parent->id,
+                'kelas' => $child['class_age'],
+                'school_code' => $request->school_code,
+                'school_name' => $namaSekolah,
+                'xp' => 0,
+                'streak' => 0,
+            ]);
+        }
 
-        return redirect('/beranda');
+        Auth::login($parent);
+
+        return redirect('/orangtua/profil');
     }
 
     // LOGIN
     public function processLogin(Request $request)
     {
-        $credentials = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required'],
+        $request->validate([
+            'login' => 'required',
+            'password' => 'required',
         ], [
-            'email.required' => 'Email wajib diisi ya!',
-            'email.email' => 'Ups! Format emailnya sepertinya kurang tepat.',
+            'login.required' => 'Email atau Username wajib diisi ya!',
             'password.required' => 'Password tidak boleh kosong!',
         ]);
 
+        $loginType = filter_var($request->login, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+
+        $credentials = [
+            $loginType => $request->login,
+            'password' => $request->password
+        ];
+
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            return redirect()->intended('/beranda');
+
+            $role = Auth::user()->role;
+            if ($role === 'admin') {
+                return redirect()->intended('/admin/dashboard');
+            } elseif ($role === 'parent') {
+                return redirect()->intended('/orangtua/profil');
+            } else {
+                return redirect()->intended('/beranda');
+            }
         }
 
         return back()->withErrors([
-            'salah_kredensial' => 'Email atau password salah nih. Coba lagi ya!',
-        ])->onlyInput('email');
+            'salah_kredensial' => 'Email/Username atau password salah nih. Coba lagi ya!',
+        ])->onlyInput('login');
+    }
+
+    // SWITCH ACCOUNT
+    public function switchAccount(Request $request, $child_id)
+    {
+        $parent = Auth::user();
+
+        if ($parent->role === 'parent') {
+            $child = User::where('id', $child_id)->where('parent_id', $parent->id)->first();
+
+            if ($child) {
+                Auth::login($child);
+                return redirect('/beranda');
+            }
+        }
+
+        return back()->with('error', 'Akses ditolak atau anak tidak ditemukan.');
     }
 
     // LOGOUT

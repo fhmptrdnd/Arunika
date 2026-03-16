@@ -21,12 +21,40 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'username',
         'role',
-        'child_name',
-        'class_age',
-        'class_code',
-        'school_name'
+        'school_code',
+        'school_name',
+        'kelas',
+        'parent_id',
+        'xp',
+        'streak',
+        'last_seen_at',
     ];
+
+    // Jika User ini adalah Guru, dia mengajar di kelas mana saja?
+    public function teachingClasses()
+    {
+        return $this->belongsToMany(Classroom::class, 'classroom_teachers', 'teacher_id', 'classroom_id')
+                    ->withPivot('subject_id')
+                    ->withTimestamps();
+    }
+
+    /**
+     * Relasi: Orang Tua memiliki banyak Anak (Sub-account)
+     */
+    public function children()
+    {
+        return $this->hasMany(User::class, 'parent_id');
+    }
+
+    /**
+     * Relasi: Anak ini milik Orang Tua siapa?
+     */
+    public function parent()
+    {
+        return $this->belongsTo(User::class, 'parent_id');
+    }
 
     /**
      * The attributes that should be hidden for serialization.

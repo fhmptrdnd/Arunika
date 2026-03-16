@@ -15,7 +15,7 @@
         </div>
 
         <div class="w-full md:w-3/5 p-10">
-            <form action="#" method="POST" class="flex flex-col gap-4">
+            <form action="{{ route('register.parent') }}" method="POST" class="flex flex-col gap-4">
                 @csrf
 
                 <div>
@@ -45,41 +45,52 @@
                     @error('name') <p class="text-red text-xs mt-1 ml-2 font-bold">{{ $message }}</p> @enderror
                 </div>
 
-                <div>
-                    <label class="block text-gray-500 mb-1 text-sm font-semibold ml-2">Nama Anak</label>
-                    <input type="text" name="child_name" placeholder="Aruna"
-                           class="w-full px-5 py-3 rounded-full border-2 border-gray-200 focus:border-blue outline-none transition-colors">
-                    @error('child_name')
-                        <p class="text-red text-sm mt-1 ml-2 font-bold">{{ $message }}</p>
-                    @enderror
+                <div id="children-container" class="flex flex-col gap-6 border-t-2 border-dashed border-gray-200 pt-6 mt-2">
+
+                    <div class="child-form bg-blue-50 p-6 rounded-3xl border border-blue-100 relative">
+                        <h3 class="font-bold text-darkblue mb-4 text-lg">Data Anak 1</h3>
+
+                        <div class="flex flex-col gap-4">
+                            <div>
+                                <label class="block text-gray-500 mb-1 text-sm font-semibold ml-2">Nama Lengkap Anak</label>
+                                <input type="text" name="children[0][name]" placeholder="Contoh: Aruna Senja" required
+                                       class="w-full px-5 py-3 rounded-full border-2 border-white focus:border-blue outline-none transition-colors">
+                            </div>
+
+                            <div>
+                                <label class="block text-gray-500 mb-1 text-sm font-semibold ml-2">Username Anak</label>
+                                <input type="text" name="children[0][username]" placeholder="Contoh: aruna123" required
+                                       class="w-full px-5 py-3 rounded-full border-2 border-white focus:border-blue outline-none transition-colors lowercase">
+                            </div>
+
+                            <div>
+                                <label class="block text-gray-500 mb-1 text-sm font-semibold ml-2">Kelas Anak</label>
+                                <select name="children[0][class_age]" required
+                                        class="w-full px-5 py-3 rounded-full border-2 border-white focus:border-blue outline-none transition-colors text-gray-600 cursor-pointer">
+                                    <option value="" disabled selected>Pilih Kelas</option>
+                                    <option value="Kelas 1">Kelas 1 SD</option>
+                                    <option value="Kelas 2">Kelas 2 SD</option>
+                                    <option value="Kelas 3">Kelas 3 SD</option>
+                                    <option value="Kelas 4">Kelas 4 SD</option>
+                                    <option value="Kelas 5">Kelas 5 SD</option>
+                                    <option value="Kelas 6">Kelas 6 SD</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
 
-                <div>
-                    <label class="block text-gray-500 mb-1 text-sm font-semibold ml-2">Kelas Anak</label>
+                <button type="button" onclick="addChildForm()" class="text-[#12A0D7] font-bold text-sm bg-blue-50 py-3 rounded-full border-2 border-dashed border-[#12A0D7] hover:bg-blue-100 transition-colors mt-2">
+                    + Tambah Anak Lainnya
+                </button>
 
-                    <select name="class_age"
-                            class="w-full px-5 py-3 rounded-full border-2 border-gray-200 focus:border-blue outline-none transition-colors text-gray-600 bg-white cursor-pointer appearance-none">
-
-                        <option value="" disabled {{ old('class_age') ? '' : 'selected' }}>Pilih Kelas Anak</option>
-
-                        <option value="Kelas 1" {{ old('class_age') == 'Kelas 1' ? 'selected' : '' }}>Kelas 1 SD</option>
-                        <option value="Kelas 2" {{ old('class_age') == 'Kelas 2' ? 'selected' : '' }}>Kelas 2 SD</option>
-                        <option value="Kelas 3" {{ old('class_age') == 'Kelas 3' ? 'selected' : '' }}>Kelas 3 SD</option>
-                        <option value="Kelas 4" {{ old('class_age') == 'Kelas 4' ? 'selected' : '' }}>Kelas 4 SD</option>
-                        <option value="Kelas 5" {{ old('class_age') == 'Kelas 5' ? 'selected' : '' }}>Kelas 5 SD</option>
-                        <option value="Kelas 6" {{ old('class_age') == 'Kelas 6' ? 'selected' : '' }}>Kelas 6 SD</option>
-                    </select>
-
-                    @error('class_age')
-                        <p class="text-red text-sm mt-1 ml-2 font-bold">{{ $message }}</p>
-                    @enderror
-                </div>
+                {{-- <button type="submit" class="...">Daftar</button> --}}
 
                 <div>
-                    <label class="block text-gray-500 mb-1 text-sm font-semibold ml-2">Kode Kelas</label>
-                    <input type="text" name="class_code" value="{{ old('class_code') }}" placeholder="Contoh: ARN001"
-                           class="w-full px-5 py-3 rounded-full border-2 border-gray-200 focus:border-blue outline-none transition-colors tracking-widest uppercase">
-
+                    <label class="block text-gray-500 mb-1 text-sm font-semibold ml-2">Kode Kelas (Opsional)</label>
+                    <input type="text" name="class_code" value="{{ old('class_code') }}" placeholder="Contoh: ARN001 (Kosongkan jika belajar mandiri)"
+                           class="w-full px-5 py-3 rounded-full border-2 border-gray-200 focus:border-blue outline-none transition-colors tracking-widest">
                     @error('class_code')
                         <p class="text-red text-sm mt-1 ml-2 font-bold">{{ $message }}</p>
                     @enderror
@@ -97,4 +108,47 @@
 
     </div>
 </div>
+<script>
+    let childCount = 1;
+
+    function addChildForm() {
+        const container = document.getElementById('children-container');
+
+        const newForm = document.createElement('div');
+        newForm.className = "child-form bg-blue-50 p-6 rounded-[24px] border border-blue-100 relative animate-slide-up mt-4";
+        newForm.innerHTML = `
+            <button type="button" onclick="this.parentElement.remove()" class="absolute top-4 right-4 text-red-400 hover:text-red-600 font-bold text-xl">&times;</button>
+            <h3 class="font-bold text-darkblue mb-4 text-lg">Data Anak ${childCount + 1}</h3>
+
+            <div class="flex flex-col gap-4">
+                <div>
+                    <label class="block text-gray-500 mb-1 text-sm font-semibold ml-2">Nama Lengkap Anak</label>
+                    <input type="text" name="children[${childCount}][name]" placeholder="Contoh: Aruna Senja" required
+                           class="w-full px-5 py-3 rounded-full border-2 border-white focus:border-blue outline-none transition-colors">
+                </div>
+                <div>
+                    <label class="block text-gray-500 mb-1 text-sm font-semibold ml-2">Username Anak (Unik)</label>
+                    <input type="text" name="children[${childCount}][username]" placeholder="contoh: aruna123" required
+                           class="w-full px-5 py-3 rounded-full border-2 border-white focus:border-blue outline-none transition-colors lowercase">
+                </div>
+                <div>
+                    <label class="block text-gray-500 mb-1 text-sm font-semibold ml-2">Kelas Anak</label>
+                    <select name="children[${childCount}][class_age]" required
+                            class="w-full px-5 py-3 rounded-full border-2 border-white focus:border-blue outline-none transition-colors text-gray-600 cursor-pointer">
+                        <option value="" disabled selected>Pilih Kelas</option>
+                        <option value="Kelas 1">Kelas 1 SD</option>
+                        <option value="Kelas 2">Kelas 2 SD</option>
+                        <option value="Kelas 3">Kelas 3 SD</option>
+                        <option value="Kelas 4">Kelas 4 SD</option>
+                        <option value="Kelas 5">Kelas 5 SD</option>
+                        <option value="Kelas 6">Kelas 6 SD</option>
+                    </select>
+                </div>
+            </div>
+        `;
+
+        container.appendChild(newForm);
+        childCount++;
+    }
+</script>
 @endsection

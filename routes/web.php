@@ -2,9 +2,12 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\MapelController;
+use App\Http\Controllers\AdminController;
+use App\Http\Middleware\IsAdmin;
 use GuzzleHttp\Middleware;
 
 // Auth
@@ -34,6 +37,68 @@ Route::get('/beranda', function () {
     }
     return redirect()->route('login');
 });
+
+Route::middleware(['auth', IsAdmin::class])->prefix('admin')->name('admin.')->group(function () {
+
+    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+
+    Route::get('/data-siswa', [AdminController::class, 'siswa'])->name('siswa');
+    Route::post('/data-siswa', [AdminController::class, 'storeSiswa'])->name('siswa.store');
+
+    Route::get('/data-guru', [AdminController::class, 'guru'])->name('guru');
+    Route::post('/data-guru', [AdminController::class, 'storeGuru'])->name('guru.store');
+
+    Route::get('/manajemen-kelas', [AdminController::class, 'kelas'])->name('kelas');
+    Route::post('/manajemen-kelas', [AdminController::class, 'storeKelas'])->name('kelas.store');
+    Route::get('/manajemen-kelas/{id}', [AdminController::class, 'kelolaKelas'])->name('kelas.kelola');
+
+    Route::post('/manajemen-kelas/{id}/tambah-siswa', [AdminController::class, 'tambahSiswaKelas'])->name('kelas.tambah-siswa');
+    Route::post('/manajemen-kelas/{id}/hapus-siswa', [AdminController::class, 'hapusSiswaKelas'])->name('kelas.hapus-siswa');
+    Route::post('/manajemen-kelas/{id}/tambah-guru', [AdminController::class, 'tambahGuruMapel'])->name('kelas.tambah-guru-mapel');
+    Route::post('/manajemen-kelas/{id}/hapus-guru', [AdminController::class, 'hapusGuruMapel'])->name('kelas.hapus-guru-mapel');
+
+    Route::get('/profil', [AdminController::class, 'profil'])->name('profil');
+
+});
+
+// // Admin Dashboard
+// Route::get('/admin/dashboard', function (Request $request) {
+//     if ($request->user()->role !== 'admin') {
+//         return redirect('/beranda');
+//     }
+
+//     return view('admin.dashboard');
+// })->middleware('auth')->name('admin.dashboard');
+// // Admin Controller
+// Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->middleware('auth')->name('admin.dashboard');
+// // Data Siswa & Guru
+// Route::get('/admin/data-siswa', function (Illuminate\Http\Request $request) {
+//     if ($request->user()->role !== 'admin') return redirect('/beranda');
+//     return view('admin.data-siswa');
+// })->middleware('auth')->name('admin.siswa');
+
+// Route::get('/admin/data-guru', function (Illuminate\Http\Request $request) {
+//     if ($request->user()->role !== 'admin') return redirect('/beranda');
+//     return view('admin.data-guru');
+// })->middleware('auth')->name('admin.guru');
+// // Manajemen Kelas & Profil Admin
+// Route::get('/admin/manajemen-kelas', function (Illuminate\Http\Request $request) {
+//     if ($request->user()->role !== 'admin') return redirect('/beranda');
+//     return view('admin.manajemen-kelas');
+// })->middleware('auth')->name('admin.kelas');
+
+// Route::get('/admin/profil', function (Illuminate\Http\Request $request) {
+//     if ($request->user()->role !== 'admin') return redirect('/beranda');
+//     return view('admin.profil');
+// })->middleware('auth')->name('admin.profil');
+
+// Profil Ortu
+Route::get('/orangtua/profil', function (Illuminate\Http\Request $request) {
+    if ($request->user()->role !== 'parent') return redirect('/beranda');
+    return view('parent.profile');
+})->middleware('auth')->name('parent.profil');
+// Switch Account
+Route::get('/switch-account/{id}', [App\Http\Controllers\AuthController::class, 'switchAccount'])->middleware('auth')->name('switch.account');
 
 // Beranda
 Route::get('/', function () {

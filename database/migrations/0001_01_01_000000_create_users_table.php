@@ -13,16 +13,28 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('role')->default('parent'); // 'admin' atau 'parent'
-            $table->string('name'); // Nama Admin / Nama Orang Tua
-            $table->string('email')->unique();
+            $table->string('name');
+
+            // Email dibuat nullable karena anak (sub-account) mungkin tidak punya email,
+            // mereka bisa login menggunakan username atau cukup dipilih dari dashboard Orang Tua.
+            $table->string('email')->unique()->nullable();
+            $table->string('username')->unique()->nullable();
+
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            
-            $table->string('child_name')->nullable(); // Nama Anak (Khusus Orang Tua)
-            $table->string('class_age')->nullable(); // Kelas/Usia (Khusus Orang Tua)
-            $table->string('class_code')->nullable(); // Kode Kelas (Admin / Orang Tua)
-            $table->string('school_name')->nullable(); // Nama Sekolah (Admin / Orang Tua)
+
+            // 4 Role Utama
+            $table->enum('role', ['admin', 'guru', 'parent', 'student'])->default('student');
+
+            // Data Sekolah & Kelas
+            $table->string('school_code')->nullable();
+            $table->string('school_name')->nullable();
+            $table->string('kelas')->nullable();
+
+            $table->foreignId('parent_id')->nullable()->constrained('users')->onDelete('cascade');
+
+            $table->integer('xp')->default(0);
+            $table->integer('streak')->default(0);
 
             $table->rememberToken();
             $table->timestamps();

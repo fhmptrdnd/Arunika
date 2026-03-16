@@ -22,7 +22,7 @@ class ProfileController extends Controller
         }
 
         $query = \App\Models\User::where('role', 'parent')
-                                 ->where('class_code', $admin->class_code);
+                                 ->where('school_code', $admin->school_code);
 
         // Fitur search
         if ($request->has('search') && $request->search != '') {
@@ -42,7 +42,7 @@ class ProfileController extends Controller
 
         $student = \App\Models\User::where('id', $id)
             ->where('role', 'parent')
-            ->where('class_code', $admin->class_code)
+            ->where('school_code', $admin->school_code)
             ->firstOrFail();
 
         return view('profile.student-detail', compact('student'));
@@ -55,11 +55,11 @@ class ProfileController extends Controller
         if ($admin->role !== 'admin') return redirect('/beranda');
 
         $student = \App\Models\User::where('id', $id)
-            ->where('class_code', $admin->class_code)
+            ->where('school_code', $admin->school_code)
             ->firstOrFail();
 
         $student->update([
-            'class_code' => null,
+            'school_code' => null,
             'school_name' => null
         ]);
 
@@ -73,16 +73,16 @@ class ProfileController extends Controller
         if ($user->role !== 'parent') return redirect('/beranda');
 
         $request->validate([
-            'class_code' => 'required|exists:users,class_code'
+            'school_code' => 'required|exists:users,school_code'
         ], [
-            'class_code.required' => 'Kode sekolah tidak boleh kosong.',
-            'class_code.exists' => 'Ups! Kode sekolah tidak ditemukan.',
+            'school_code.required' => 'Kode sekolah tidak boleh kosong.',
+            'school_code.exists' => 'Ups! Kode sekolah tidak ditemukan.',
         ]);
 
-        $adminSekolah = \App\Models\User::where('class_code', $request->class_code)->first();
+        $adminSekolah = \App\Models\User::where('school_code', $request->school_code)->first();
 
         $user->update([
-            'class_code' => $request->class_code,
+            'school_code' => $request->school_code,
             'school_name' => $adminSekolah->school_name
         ]);
 

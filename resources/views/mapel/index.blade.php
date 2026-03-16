@@ -10,8 +10,8 @@
         </a>
     </div>
     <div class="mb-10 animate-slide-up">
-        <h1 class="text-5xl font-bold text-darkblue mb-2">{{ $title }}</h1>
-        <p class="text-xl text-gray-600">{{ $subtitle }}</p>
+        <h1 class="text-5xl font-bold text-darkblue dark:text-white mb-2">{{ $title }}</h1>
+        <p class="text-xl text-gray-600 dark:text-white">{{ $subtitle }}</p>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 animate-pop-in delay-100">
