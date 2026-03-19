@@ -9,6 +9,7 @@ use App\Http\Controllers\MapelController;
 use App\Http\Controllers\AdminController;
 use App\Http\Middleware\IsAdmin;
 use GuzzleHttp\Middleware;
+use App\Http\Controllers\PlacementController;
 
 // Auth
 Route::get('/masuk', [AuthController::class, 'login'])->name('login');
@@ -30,13 +31,10 @@ Route::post('/profil/update-kode-sekolah', [ProfileController::class, 'updateSch
 
 Route::post('/keluar', [AuthController::class, 'logout'])->name('logout');
 
-// Middleware
-Route::get('/beranda', function () {
-    if (Auth::check()){
-        return redirect()->route('beranda');
-    }
-    return redirect()->route('login');
-});
+// Beranda route (single entrypoint for authenticated users)
+Route::get('/', function () {
+    return view('beranda');
+})->middleware(['auth', 'placement.done'])->name('beranda');
 
 Route::middleware(['auth', IsAdmin::class])->prefix('admin')->name('admin.')->group(function () {
 
@@ -59,6 +57,14 @@ Route::middleware(['auth', IsAdmin::class])->prefix('admin')->name('admin.')->gr
 
     Route::get('/profil', [AdminController::class, 'profil'])->name('profil');
 
+});
+
+// PLACEMENT TEST STUDENT (non-admin routes)
+Route::middleware('auth')->group(function () {
+    Route::get('/placement-test',         [PlacementController::class, 'intro'])  ->name('placement.intro');
+    Route::get('/placement-test/mulai',   [PlacementController::class, 'start'])  ->name('placement.start');
+    Route::post('/placement-test/submit', [PlacementController::class, 'submit']) ->name('placement.submit');
+    Route::get('/placement-test/hasil',   [PlacementController::class, 'result']) ->name('placement.result');
 });
 
 // // Admin Dashboard

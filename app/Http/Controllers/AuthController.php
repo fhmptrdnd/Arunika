@@ -126,10 +126,19 @@ class AuthController extends Controller
                 'streak' => 0,
             ]);
         }
+        
+        $firstChild = User::where('parent_id', $parent->id)->where('role', 'student')->first();
 
-        Auth::login($parent);
+        if ($firstChild) {
+            Auth::login($firstChild);
+            return redirect()->route('placement.intro');
+        }
 
         return redirect('/orangtua/profil');
+
+        // Auth::login($parent);
+
+        // return redirect('/orangtua/profil');
     }
 
     // LOGIN
@@ -158,7 +167,11 @@ class AuthController extends Controller
                 return redirect()->intended('/admin/dashboard');
             } elseif ($role === 'parent') {
                 return redirect()->intended('/orangtua/profil');
-            } else {
+            } else { // UDAH TES BLM
+                $sudahTest = \App\Models\PlacementResult::where('student_id', Auth::id())->exists();
+                if (!$sudahTest) {
+                    return redirect()->route('placement.intro');
+                }
                 return redirect()->intended('/beranda');
             }
         }
@@ -178,6 +191,10 @@ class AuthController extends Controller
 
             if ($child) {
                 Auth::login($child);
+                $sudahTest = \App\Models\PlacementResult::where('student_id', $child->id)->exists();
+                if (!$sudahTest) {
+                    return redirect()->route('placement.intro');
+                }
                 return redirect('/beranda');
             }
         }
