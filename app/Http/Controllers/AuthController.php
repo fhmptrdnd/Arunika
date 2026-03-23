@@ -156,6 +156,8 @@ class AuthController extends Controller
             $role = Auth::user()->role;
             if ($role === 'admin') {
                 return redirect()->intended('/admin/dashboard');
+            } elseif ($role === 'guru') {
+                return redirect()->intended('/guru/dashboard');
             } elseif ($role === 'parent') {
                 return redirect()->intended('/orangtua/profil');
             } else {
