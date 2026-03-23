@@ -7,7 +7,9 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\MapelController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\GuruController;
 use App\Http\Middleware\IsAdmin;
+use App\Http\Middleware\IsGuru;
 use GuzzleHttp\Middleware;
 
 // Auth
@@ -38,6 +40,10 @@ Route::get('/beranda', function () {
     return redirect()->route('login');
 });
 
+Route::middleware('auth')->group(function () {
+    Route::get('/perkembangan', [SiswaController::class, 'perkembangan'])->name('siswa.perkembangan');
+});
+
 Route::middleware(['auth', IsAdmin::class])->prefix('admin')->name('admin.')->group(function () {
 
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
@@ -59,6 +65,21 @@ Route::middleware(['auth', IsAdmin::class])->prefix('admin')->name('admin.')->gr
 
     Route::get('/profil', [AdminController::class, 'profil'])->name('profil');
 
+});
+
+Route::middleware(['auth', IsGuru::class])->prefix('guru')->name('guru.')->group(function () {
+    Route::get('/dashboard', [GuruController::class, 'dashboard'])->name('dashboard');
+    Route::get('/siswa-kelas', [GuruController::class, 'siswaKelas'])->name('siswa');
+    Route::get('/siswa-kelas/{id}', [GuruController::class, 'profilSiswa'])->name('siswa.profil');
+    Route::post('/siswa-kelas/{id}/catatan', [GuruController::class, 'simpanCatatan'])->name('siswa.catatan');
+    
+    // TUGAS
+    Route::get('/kelola-tugas', [GuruController::class, 'kelolaTugas'])->name('tugas');
+    Route::post('/kelola-tugas', [GuruController::class, 'buatTugas'])->name('tugas.buat');
+    Route::get('/kelola-tugas/{id}', [GuruController::class, 'detailTugas'])->name('tugas.detail');
+    Route::post('/kelola-tugas/{id}/tutup', [GuruController::class, 'tutupTugas'])->name('tugas.tutup');
+
+    Route::get('/profil', [GuruController::class, 'profil'])->name('profil');
 });
 
 // // Admin Dashboard
