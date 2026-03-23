@@ -7,6 +7,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\MapelController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\ScoreController;
 use App\Http\Middleware\IsAdmin;
 use GuzzleHttp\Middleware;
 
@@ -32,7 +33,7 @@ Route::post('/keluar', [AuthController::class, 'logout'])->name('logout');
 
 // Middleware
 Route::get('/beranda', function () {
-    if (Auth::check()){
+    if (Auth::check()) {
         return redirect()->route('beranda');
     }
     return redirect()->route('login');
@@ -58,7 +59,6 @@ Route::middleware(['auth', IsAdmin::class])->prefix('admin')->name('admin.')->gr
     Route::post('/manajemen-kelas/{id}/hapus-guru', [AdminController::class, 'hapusGuruMapel'])->name('kelas.hapus-guru-mapel');
 
     Route::get('/profil', [AdminController::class, 'profil'])->name('profil');
-
 });
 
 // // Admin Dashboard
@@ -118,7 +118,8 @@ Route::get('/mapel/peminatan', [MapelController::class, 'peminatan'])->middlewar
 Route::get('/mapel/lainnya', [MapelController::class, 'lainnya'])->middleware('auth')->name('mapel.lainnya');
 
 // Level
-Route::get('/mapel/{slug}/level', [MapelController::class, 'showLevels'])->middleware('auth')->name('mapel.levels');
+// Route::get('/mapel/{slug}/level', [MapelController::class, 'showLevels'])->middleware('auth')->name('mapel.levels');
+Route::get('/mapel/{slug}/level/{kelas}', [MapelController::class, 'showLevels'])->middleware('auth')->name('mapel.levels');
 
 // Riwayat & Statistik
 Route::get('/riwayat', function () {
@@ -128,3 +129,15 @@ Route::get('/riwayat', function () {
 Route::get('/placeholder', function () {
     return view('placeholder', ['title' => 'Halaman Placeholder']);
 })->name('placeholder');
+
+
+// MAPEL
+Route::get('/indonesia/kelas-1/level-1', function () {
+    return view('mapel.1.indo.1', ['mapel' => ['slug' => 'bahasa-indonesia'], 'kelas' => 'Kelas 1']);
+})->name('mapel.indo.1.1');
+Route::get('/indonesia/kelas-1/level-2', function () {
+    return view('mapel.1.indo.2', ['mapel' => ['slug' => 'bahasa-indonesia'], 'kelas' => 'Kelas 2']);
+})->name('mapel.indo.1.2');
+
+// Score
+Route::post('/save-score', [ScoreController::class, 'store']);
