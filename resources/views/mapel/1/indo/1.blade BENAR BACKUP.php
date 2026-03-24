@@ -20,7 +20,7 @@
     <!-- MediaPipe Hand Tracking -->
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
-    <script src="{{ asset('js/assessment.js') }}"></script>
+
     <style>
         @import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap");
 
@@ -414,7 +414,7 @@
             <p class="text-xl text-gray-600 mb-6 font-bold" id="victory-subtitle">
                 Kerja bagus, Penjelajah!
             </p>
-            <div id="assessment-container" class="mt-4 w-full mb-4"></div>
+
             <div class="w-full mb-6 z-10 space-y-5">
 
                 <!-- === XP SUMMARY (SIMPLE) === -->
@@ -442,7 +442,48 @@
                     <span class="font-black text-green-600 text-3xl" id="earned-xp-text">+55</span>
                 </div>
 
+                <!-- === PERFORMANCE (LEBIH CLEAN) === -->
+                <div class="bg-white border-2 border-blue-200 rounded-2xl p-4">
+                    <h3 class="font-black text-blue-700 mb-4 text-lg text-center">
+                        Performa Kamu
+                    </h3>
 
+                    <!-- Literasi -->
+                    <div class="mb-4">
+                        <div class="flex justify-between text-sm font-bold text-gray-600 mb-1">
+                            <span>📖 Literasi</span>
+                            <span id="score-literasi">0</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div id="bar-literasi" class="h-2 bg-blue-500 rounded-full transition-all duration-700"
+                                style="width:0%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Logika -->
+                    <div class="mb-4">
+                        <div class="flex justify-between text-sm font-bold text-gray-600 mb-1">
+                            <span>🧠 Logika</span>
+                            <span id="score-logika">0</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div id="bar-logika" class="h-2 bg-purple-500 rounded-full transition-all duration-700"
+                                style="width:0%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Visual -->
+                    <div>
+                        <div class="flex justify-between text-sm font-bold text-gray-600 mb-1">
+                            <span>👁️ Visual</span>
+                            <span id="score-visual">0</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div id="bar-visual" class="h-2 bg-green-500 rounded-full transition-all duration-700"
+                                style="width:0%"></div>
+                        </div>
+                    </div>
+                </div>
 
             </div>
 
@@ -455,14 +496,6 @@
 
     <!-- --- JAVASCRIPT LOGIC --- -->
     <script>
-        const assessmentConfig = {
-            literasi: true,
-            logika: true,
-            visual: true
-        };
-
-        let assessment = createAssessment(assessmentConfig);
-
         function saveScoreToServer() {
             fetch('/save-score', {
                     method: 'POST',
@@ -476,7 +509,10 @@
                         mapel: 'bahasa-indonesia',
                         kelas: '1',
                         level: '1',
-                        ...assessment
+
+                        literasi: assessment.literasi,
+                        logika: assessment.logika,
+                        visual: assessment.visual
                     })
                 })
                 .then(async res => {
@@ -638,7 +674,11 @@
         let mistakesMade = 0;
         let correctAnswersCount = 0;
         let roundResults = [];
-
+        let assessment = {
+            literasi: 0,
+            logika: 0,
+            visual: 0
+        };
 
         const phaseGuess = document.getElementById("phase-guess");
         const phaseVoice = document.getElementById("phase-voice");
@@ -788,18 +828,12 @@
                 }, 1800);
             }
             if (selectedLetter === round.target) {
-                // BENAR
-                updateAssessment(assessment, {
-                    literasi: 2,
-                    logika: 1,
-                    visual: 1
-                });
+                assessment.literasi += 2; // kenal huruf
+                assessment.logika += 1; // keputusan benar
+                assessment.visual += 1; // respon visual
             } else {
-                // SALAH
-                updateAssessment(assessment, {
-                    logika: -1,
-                    visual: -1
-                });
+                assessment.logika -= 1;
+                assessment.visual -= 1;
             }
         }
 
@@ -1048,10 +1082,9 @@
             currentState = "SUCCESS";
             clearTimeout(voiceRetryTimeout);
             voiceRetryTimeout = null;
-            updateAssessment(assessment, {
-                literasi: 3,
-                visual: 1
-            });
+            assessment.literasi += 3; // kemampuan mengucapkan
+            assessment.visual += 1; // mengikuti instruksi
+
             // Matikan visualizer
             stopAudioVisualizer();
 
@@ -1154,14 +1187,32 @@
             document.getElementById("earned-xp-text").innerText =
                 `+${levelEarnedXP}`;
 
+            // === TAMPILKAN NILAI ===
+            document.getElementById("score-literasi").innerText = assessment.literasi;
+            document.getElementById("score-logika").innerText = assessment.logika;
+            document.getElementById("score-visual").innerText = assessment.visual;
 
-            renderAssessmentUI(assessment);
-            updateAssessmentBar(assessment);
             // === HITUNG PERSENTASE (biar jadi bar) ===
-            const maxScore = Math.max(...Object.values(assessment), 10);
+            const maxScore = 20; // sesuaikan
 
-            renderAssessmentUI(assessment);
-            updateAssessmentBar(assessment);
+            const barLiterasi = document.getElementById("bar-literasi");
+            const barLogika = document.getElementById("bar-logika");
+            const barVisual = document.getElementById("bar-visual");
+
+            if (barLiterasi) {
+                barLiterasi.style.width =
+                    Math.min((assessment.literasi / maxScore) * 100, 100) + "%";
+            }
+
+            if (barLogika) {
+                barLogika.style.width =
+                    Math.min((assessment.logika / maxScore) * 100, 100) + "%";
+            }
+
+            if (barVisual) {
+                barVisual.style.width =
+                    Math.min((assessment.visual / maxScore) * 100, 100) + "%";
+            }
             overlay.classList.remove("hidden");
             overlay.classList.add("flex");
             modal.classList.add("animate-pop-in");

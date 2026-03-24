@@ -139,5 +139,19 @@ Route::get('/indonesia/kelas-1/level-2', function () {
     return view('mapel.1.indo.2', ['mapel' => ['slug' => 'bahasa-indonesia'], 'kelas' => 'Kelas 2']);
 })->name('mapel.indo.1.2');
 
+Route::get('/matematika/kelas-1/level-1', function () {
+    return view('mapel.1.matematika.1', ['mapel' => ['slug' => 'matematika'], 'kelas' => 'Kelas 1']);
+})->name('mapel.matematika.1.1');
+Route::get('/matematika/kelas-1/level-2', function () {
+    return view('mapel.1.matematika.2', ['mapel' => ['slug' => 'matematika'], 'kelas' => 'Kelas 1']);
+})->name('mapel.matematika.1.2');
+
+Route::get('/pkn/kelas-1/level-1', function () {
+    return view('mapel.1.pkn.1', ['mapel' => ['slug' => 'pkn'], 'kelas' => 'Kelas 1']);
+})->name('mapel.pkn.1.1');
+Route::get('/pkn/kelas-1/level-2', function () {
+    return view('mapel.1.pkn.2', ['mapel' => ['slug' => 'pkn'], 'kelas' => 'Kelas 1']);
+})->name('mapel.pkn.1.2');
+
 // Score
 Route::post('/save-score', [ScoreController::class, 'store']);

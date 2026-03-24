@@ -17,7 +17,7 @@ class ScoreController extends Controller
                 'true_answers' => 'required|integer',
                 'mapel' => 'required|string',
                 'kelas' => 'required|string',
-                'level' => 'required|string',
+                'level' => 'required',
             ]);
 
             Score::create([
@@ -26,9 +26,14 @@ class ScoreController extends Controller
                 'true_answers' => $data['true_answers'],
                 'mapel' => $data['mapel'],
                 'kelas' => $data['kelas'],
+                // 'level' => $data['level'],
                 'level' => $data['level'],
+                'literasi' => $request->literasi,
+                'logika' => $request->logika,
+                'visual' => $request->visual,
+                'english' => $request->english,
+                'numerasi' => $request->numerasi,
             ]);
-
             return response()->json([
                 'success' => true
             ]);

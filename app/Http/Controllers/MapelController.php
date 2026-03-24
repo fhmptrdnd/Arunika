@@ -13,14 +13,16 @@ class MapelController extends Controller
     {
         $title = "Mapel Peminatan";
         $subtitle = "Fokus pada bakat terhebatmu! Ini adalah mata pelajaran yang paling cocok untukmu.";
-
+        $mapel = "peminatan";
         // Dummy (Nanti diambil dari hasil Placement Test di Database)
         $subjects = [
             ['name' => 'Matematika', 'icon' => '🧮', 'color' => 'bg-blue-100', 'text_color' => 'text-blue-600', 'slug' => 'matematika'],
-            ['name' => 'Sains Alam', 'icon' => '🔬', 'color' => 'bg-green-100', 'text_color' => 'text-green-600', 'slug' => 'sains'],
         ];
 
-        return view('mapel.index', compact('title', 'subtitle', 'subjects'));
+        $user = Auth::user();
+        $kelas = $user->kelas;
+
+        return view('mapel.index', compact('title', 'subtitle', 'subjects', 'mapel', 'user', 'kelas'));
     }
 
     // HALAMAN MAPEL LAINNYA
@@ -30,6 +32,7 @@ class MapelController extends Controller
         $subtitle = "Dunia ini luas! Yuk jelajahi ilmu-ilmu baru yang tidak kalah seru.";
         $user = Auth::user();
         $kelas = $user->kelas;
+        $mapel = "";
         // kelas 1
         if ($kelas == 'Kelas 1') {
             $subjects = [
@@ -50,7 +53,7 @@ class MapelController extends Controller
                 ['name' => 'Sejarah', 'icon' => '🌍', 'color' => 'bg-orange-100', 'text_color' => 'text-orange-600', 'slug' => 'sejarah'],
             ];
         }
-        return view('mapel.index', compact('title', 'subtitle', 'subjects', 'user', 'kelas'));
+        return view('mapel.index', compact('title', 'subtitle', 'subjects', 'user', 'kelas', 'mapel'));
     }
 
 
@@ -62,6 +65,8 @@ class MapelController extends Controller
         $kelas = $user->kelas;
         // ambil data score
         $score = Score::where('user_id', $user->id)->first();
-        return view('mapel.levels', compact('subjectName', 'slug', 'kelas', 'score'));
+        $level = $score ? $score->level : 0;
+
+        return view('mapel.levels', compact('subjectName', 'slug', 'kelas', 'score', 'level'));
     }
 }

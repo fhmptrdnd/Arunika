@@ -17,11 +17,11 @@
     <!-- Confetti -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <script src="{{ asset('js/assessment.js') }}"></script>
 
     <!-- MediaPipe Hand Tracking -->
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
-
     <style>
         @import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap");
 
@@ -418,46 +418,55 @@
             <p class="text-xl text-gray-600 mb-6 font-bold" id="victory-subtitle">
                 Kerja bagus, Penjelajah!
             </p>
+            <div id="assessment-container" class="mt-4 w-full mb-4"></div>
+            <div class="w-full mb-6 z-10 space-y-5">
 
-            <div class="flex flex-col gap-3 mb-8 w-full z-10">
-                <div class="flex justify-between items-center bg-gray-50 p-3 rounded-2xl border-2 border-gray-100">
-                    <span class="font-bold text-gray-600 flex items-center gap-2"><i data-lucide="check-circle-2"
-                            class="w-5 h-5 text-green-500"></i>
-                        Jawaban Benar (<span id="correct-count">5</span>)</span>
-                    <span class="font-black text-green-500" id="xp-answers">+25 XP</span>
+                <!-- === XP SUMMARY (SIMPLE) === -->
+                <div class="bg-gray-50 rounded-2xl p-4 border border-gray-200">
+                    <div class="flex justify-between text-sm font-bold text-gray-500 mb-2">
+                        <span>Jawaban Benar</span>
+                        <span id="correct-count">5</span>
+                    </div>
+
+                    <div class="flex justify-between text-sm font-bold text-gray-500 mb-2">
+                        <span>XP dari Jawaban</span>
+                        <span id="xp-answers" class="text-green-500">+25</span>
+                    </div>
+
+                    <div class="flex justify-between text-sm font-bold text-gray-500">
+                        <span>Bonus Level</span>
+                        <span class="text-green-500">+20</span>
+                    </div>
                 </div>
 
-                <div class="flex justify-between items-center bg-gray-50 p-3 rounded-2xl border-2 border-gray-100">
-                    <span class="font-bold text-gray-600 flex items-center gap-2"><i data-lucide="flag"
-                            class="w-5 h-5 text-blue-500"></i> Selesai
-                        Level</span>
-                    <span class="font-black text-green-500">+20 XP</span>
-                </div>
-
-                <div id="flawless-badge"
-                    class="flex justify-between items-center bg-yellow-50 p-3 rounded-2xl border-2 border-yellow-200">
-                    <span class="font-bold text-yellow-600 flex items-center gap-2"><i data-lucide="star"
-                            class="w-5 h-5 text-yellow-500 fill-current"></i>
-                        Bonus Sempurna!</span>
-                    <span class="font-black text-yellow-500">+10 XP</span>
-                </div>
-
+                <!-- === TOTAL XP (HIGHLIGHT) === -->
                 <div
-                    class="mt-2 flex justify-between items-center bg-green-100 p-4 rounded-2xl border-4 border-green-300 shadow-inner">
-                    <span class="font-black text-green-800 text-lg">Total XP Didapat</span>
+                    class="bg-gradient-to-r from-green-100 to-green-200 border-2 border-green-300 rounded-2xl p-4 flex justify-between items-center shadow-inner">
+                    <span class="font-black text-green-800 text-lg">Total XP</span>
                     <span class="font-black text-green-600 text-3xl" id="earned-xp-text">+55</span>
                 </div>
+
+
+
             </div>
 
             <a href="{{ route('mapel.lainnya') }}"
                 class="bg-gradient-to-r from-green-400 to-green-500 hover:from-green-500 hover:to-green-600 text-white text-2xl font-black py-4 px-12 rounded-full shadow-[0_8px_0_#15803d] hover:shadow-[0_4px_0_#15803d] hover:translate-y-1 transition-all w-full md:w-auto z-10">
-                Lanjut ke Level 3
+                Lanjut ke Level 2
             </a>
         </div>
     </div>
 
     <!-- --- JAVASCRIPT LOGIC --- -->
     <script>
+        const assessmentConfig = {
+            literasi: true,
+            logika: true,
+            visual: true
+        };
+
+        let assessment = createAssessment(assessmentConfig);
+
         function saveScoreToServer() {
             fetch('/save-score', {
                     method: 'POST',
@@ -471,6 +480,8 @@
                         mapel: 'bahasa-indonesia',
                         kelas: '1',
                         'level': '2',
+                        ...assessment
+
                     })
                 })
                 .then(async res => {
@@ -745,6 +756,11 @@
             const btn = document.getElementById(`btn-${selectedPic}`);
 
             if (selectedPic === round.target) {
+                updateAssessment(assessment, {
+                    literasi: 2,
+                    visual: 2,
+                    logika: 1
+                });
                 playSound("success");
                 btn.classList.add("animate-glow-gold");
                 owlMessage.innerText = "Pintar! Sekarang ucapkan katanya.";
@@ -760,6 +776,10 @@
                     startVoicePhase();
                 }, 1500);
             } else {
+                updateAssessment(assessment, {
+                    logika: -1,
+                    visual: -1
+                });
                 playSound("error");
                 btn.classList.add(
                     "animate-shake",
@@ -1040,6 +1060,9 @@
         };
 
         function successVoicePhase() {
+            updateAssessment(assessment, {
+                literasi: 3
+            });
             currentState = "SUCCESS";
             clearTimeout(voiceRetryTimeout);
             voiceRetryTimeout = null;
@@ -1140,11 +1163,15 @@
                 `+${correctAnswersCount * 5} XP`;
 
             const flawlessBadge = document.getElementById("flawless-badge");
-            flawlessBadge.style.display = mistakesMade === 0 ? "flex" : "none";
+
+            if (flawlessBadge) {
+                flawlessBadge.style.display = mistakesMade === 0 ? "flex" : "none";
+            }
 
             document.getElementById("earned-xp-text").innerText =
                 `+${levelEarnedXP}`;
-
+            renderAssessmentUI(assessment);
+            updateAssessmentBar(assessment);
             overlay.classList.remove("hidden");
             overlay.classList.add("flex");
             modal.classList.add("animate-pop-in");
