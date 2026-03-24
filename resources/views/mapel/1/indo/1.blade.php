@@ -17,10 +17,10 @@
     <!-- Confetti -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <script src="{{ asset('js/assessment.js') }}"></script>
     <!-- MediaPipe Hand Tracking -->
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
-    <script src="{{ asset('js/assessment.js') }}"></script>
     <style>
         @import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap");
 

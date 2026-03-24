@@ -153,5 +153,36 @@ Route::get('/pkn/kelas-1/level-2', function () {
     return view('mapel.1.pkn.2', ['mapel' => ['slug' => 'pkn'], 'kelas' => 'Kelas 1']);
 })->name('mapel.pkn.1.2');
 
+// Kelas 2
+Route::get('/bahasa-inggris/kelas-2/level-1', function () {
+    return view('mapel.2.big.1', ['mapel' => ['slug' => 'bahasa-inggris'], 'kelas' => 'Kelas 2']);
+})->name('mapel.big.2.1');
+Route::get('/bahasa-inggris/kelas-2/level-2', function () {
+    return view('mapel.2.big.2', ['mapel' => ['slug' => 'bahasa-inggris'], 'kelas' => 'Kelas 2']);
+})->name('mapel.big.2.2');
+
+Route::get('/matematika/kelas-2/level-1', function () {
+    return view('mapel.2.matematika.1', ['mapel' => ['slug' => 'matematika'], 'kelas' => 'Kelas 2']);
+})->name('mapel.mtk.2.1');
+Route::get('/matematika/kelas-2/level-2', function () {
+    return view('mapel.2.matematika.2', ['mapel' => ['slug' => 'matematika'], 'kelas' => 'Kelas 2']);
+})->name('mapel.mtk.2.2');
+
+Route::get('/indo/kelas-2/level-1', function () {
+    return view('mapel.2.indo.1', ['mapel' => ['slug' => 'indo'], 'kelas' => 'Kelas 2']);
+})->name('mapel.indo.2.1');
+Route::get('/indo/kelas-2/level-2', function () {
+    return view('mapel.2.indo.2', ['mapel' => ['slug' => 'indo'], 'kelas' => 'Kelas 2']);
+})->name('mapel.indo.2.2');
+
+
+// Kelas 3
+Route::get('/big/kelas-3/level-1', function () {
+    return view('mapel.3.big.1', ['mapel' => ['slug' => 'big'], 'kelas' => 'Kelas 3']);
+})->name('mapel.big.3.1');
+Route::get('/big/kelas-3/level-2', function () {
+    return view('mapel.3.big.3', ['mapel' => ['slug' => 'big'], 'kelas' => 'Kelas 3']);
+})->name('mapel.big.3.2');
+
 // Score
 Route::post('/save-score', [ScoreController::class, 'store']);

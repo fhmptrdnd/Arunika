@@ -38,22 +38,20 @@
                 @endforeach
             @else
                 @foreach ($subjects as $mapel)
-                    @if ($kelas == 'Kelas 1')
-                        <a href="{{ route('mapel.levels', ['slug' => $mapel['slug'], 'kelas' => $kelas]) }}"
-                            class="bg-white rounded-[40px] p-8 shadow-xl hover:-translate-y-3 hover:shadow-2xl transition-all duration-300 flex flex-col items-center text-center no-underline group border-b-8 border-transparent hover:border-[#12A0D7]">
-                            <div
-                                class="w-32 h-32 {{ $mapel['color'] }} rounded-full flex items-center justify-center text-6xl shadow-inner mb-6 group-hover:scale-110 transition-transform duration-300">
-                                {{ $mapel['icon'] }}
-                            </div>
+                    <a href="{{ route('mapel.levels', ['slug' => $mapel['slug'], 'kelas' => $kelas]) }}"
+                        class="bg-white rounded-[40px] p-8 shadow-xl hover:-translate-y-3 hover:shadow-2xl transition-all duration-300 flex flex-col items-center text-center no-underline group border-b-8 border-transparent hover:border-[#12A0D7]">
+                        <div
+                            class="w-32 h-32 {{ $mapel['color'] }} rounded-full flex items-center justify-center text-6xl shadow-inner mb-6 group-hover:scale-110 transition-transform duration-300">
+                            {{ $mapel['icon'] }}
+                        </div>
 
-                            <h2 class="text-2xl font-bold text-darkblue mb-2">{{ $mapel['name'] }}</h2>
+                        <h2 class="text-2xl font-bold text-darkblue mb-2">{{ $mapel['name'] }}</h2>
 
-                            <div class="w-full bg-gray-200 rounded-full h-3 mt-4 overflow-hidden">
-                                <div class="bg-yellow h-3 rounded-full" style="width: 0%"></div>
-                            </div>
-                            <p class="text-sm text-gray-400 mt-2 font-semibold">Belum dimulai</p>
-                        </a>
-                    @endif
+                        <div class="w-full bg-gray-200 rounded-full h-3 mt-4 overflow-hidden">
+                            <div class="bg-yellow h-3 rounded-full" style="width: 0%"></div>
+                        </div>
+                        <p class="text-sm text-gray-400 mt-2 font-semibold">Belum dimulai</p>
+                    </a>
                 @endforeach
             @endif
 

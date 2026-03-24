@@ -42,17 +42,18 @@ class MapelController extends Controller
             ];
         } elseif ($kelas == 'Kelas 2') {
             $subjects = [
-                ['name' => 'Bahasa Indonesia', 'icon' => '📚', 'color' => 'bg-blue-100', 'text_color' => 'text-blue-600', 'slug' => 'bahasa-indonesia'],
+                ['name' => 'Bahasa Inggris', 'icon' => '📔', 'color' => 'bg-blue-100', 'text_color' => 'text-blue-600', 'slug' => 'bahasa-inggris'],
                 ['name' => 'Matematika', 'icon' => '🧮', 'color' => 'bg-green-100', 'text_color' => 'text-green-600', 'slug' => 'matematika'],
-                ['name' => 'Ilmu Pengetahuan Alam', 'icon' => '🔬', 'color' => 'bg-yellow-100', 'text_color' => 'text-yellow-600', 'slug' => 'ipa']
+                ['name' => 'Bahasa Indonesia', 'icon' => '👋🏻', 'color' => 'bg-yellow-100', 'text_color' => 'text-yellow-600', 'slug' => 'bahasa-indonesia']
             ];
         } elseif ($kelas == 'Kelas 3') {
             $subjects = [
                 ['name' => 'Bahasa Inggris', 'icon' => '🔤', 'color' => 'bg-yellow-100', 'text_color' => 'text-yellow-600', 'slug' => 'bahasa-inggris'],
-                ['name' => 'Seni Budaya', 'icon' => '🎨', 'color' => 'bg-pink-100', 'text_color' => 'text-pink-600', 'slug' => 'seni-budaya'],
-                ['name' => 'Sejarah', 'icon' => '🌍', 'color' => 'bg-orange-100', 'text_color' => 'text-orange-600', 'slug' => 'sejarah'],
+                ['name' => 'Bahasa Indonesia', 'icon' => '👋🏻', 'color' => 'bg-yellow-100', 'text_color' => 'text-yellow-600', 'slug' => 'bahasa-indonesia'],
+                ['name' => 'Matematika', 'icon' => '🧮', 'color' => 'bg-green-100', 'text_color' => 'text-green-600', 'slug' => 'matematika'],
             ];
         }
+
         return view('mapel.index', compact('title', 'subtitle', 'subjects', 'user', 'kelas', 'mapel'));
     }
 
@@ -60,6 +61,7 @@ class MapelController extends Controller
     // HALAMAN LEVEL
     public function showLevels($slug)
     {
+
         $subjectName = ucwords(str_replace('-', ' ', $slug));
         $user = Auth::user();
         $kelas = $user->kelas;
