@@ -54,8 +54,27 @@ class MapelController extends Controller
             ];
         }
 
-        return view('mapel.index', compact('title', 'subtitle', 'subjects', 'user', 'kelas', 'mapel'));
+        // Belum dimulai if?
+        // ambil semua score user
+        $scores = Score::where('user_id', $user->id)->get();
+
+        // mapping progress per mapel + kelas
+        $progressMap = [];
+
+        foreach ($scores as $score) {
+            $key = $score->mapel . '_' . $score->kelas;
+
+            if (!isset($progressMap[$key])) {
+                $progressMap[$key] = [];
+            }
+
+            $progressMap[$key][] = $score->level;
+        }
+
+        return view('mapel.index', compact('title', 'subtitle', 'subjects', 'user', 'kelas', 'mapel', 'progressMap'));
     }
+
+
 
 
     // HALAMAN LEVEL

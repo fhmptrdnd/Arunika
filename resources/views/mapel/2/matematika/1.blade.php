@@ -923,8 +923,6 @@
             document.getElementById("xp-answers").innerText =
                 `+${totalAnswersXP} XP`; // Tampilkan akumulasi XP sebenarnya
 
-
-
             const flawlessBadge = document.getElementById("flawless-badge");
 
             if (flawlessBadge) {
