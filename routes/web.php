@@ -198,7 +198,13 @@ Route::get('/matematika/kelas-3/level-2', function () {
     return view('mapel.3.matematika.2', ['mapel' => ['slug' => 'matematika'], 'kelas' => 'Kelas 3']);
 })->name('mapel.mtk.3.2');
 
+// Siswa
+Route::put('/admin/siswa/{id}', [AdminController::class, 'editSiswa'])->name('admin.siswa.edit');
+Route::delete('/admin/siswa/{id}', [AdminController::class, 'hapusSiswa'])->name('admin.siswa.hapus');
 
+// Guru
+Route::put('/admin/guru/{id}', [AdminController::class, 'editGuru'])->name('admin.guru.edit');
+Route::delete('/admin/guru/{id}', [AdminController::class, 'hapusGuru'])->name('admin.guru.hapus');
 
 // Score
 Route::post('/save-score', [ScoreController::class, 'store']);
