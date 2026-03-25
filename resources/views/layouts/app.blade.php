@@ -50,6 +50,7 @@
             <a href="{{ route('placeholder') }}" class="bg-yellow text-darkblue font-bold px-4 py-2 hover:bg-yellow-400 transition rounded-full shadow-md">7 🔥</a>
             <a href="{{ route('profile') }}" class="bg-darkblue text-white font-bold px-6 py-2 rounded-full hover:bg-blue-800 transition shadow-md">Profil</a>
             <a href="{{ route('placeholder') }}" class="bg-orange text-white font-bold px-6 py-2 rounded-full hover:bg-orange-600 transition shadow-md">Riwayat</a>
+            <a href="{{ route('siswa.perkembangan') }}" class="bg-teal text-white font-bold px-4 py-2 rounded-full hover:bg-teal/80 transition shadow-md">Perkembangan</a>
             <form action="{{ route('logout') }}" method="POST" class="inline m-0 p-0">
                 @csrf
                 <button type="submit" class="bg-gray-300 text-darkblue font-bold px-6 py-2 rounded-full hover:bg-red-400 hover:text-white transition shadow-md cursor-pointer border-none outline-none">
