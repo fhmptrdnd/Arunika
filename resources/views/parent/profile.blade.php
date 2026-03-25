@@ -20,8 +20,8 @@
     <div class="bg-white rounded-[40px] border border-gray-100 shadow-[0_2px_15px_rgba(0,0,0,0.03)] p-10 flex flex-col lg:flex-row gap-12 mb-10">
 
         <div class="flex flex-col items-center justify-center lg:border-r border-gray-100 lg:pr-12 shrink-0">
-            <div class="w-40 h-40 bg-[#FBD740] rounded-[30px] border-[6px] border-[#FEF5D3] flex items-center justify-center shadow-inner mb-6">
-                <img src="{{ asset('images/avatar-smiley.png') }}" alt="Avatar" class="w-24 h-24 object-contain">
+            <div class="w-50 h-50 flex items-center justify-center mb-6">
+            <img src="{{ asset('images/OrangTua.png') }}" alt="Admin">
             </div>
             <span class="bg-[#FEF5D3] text-orange font-bold tracking-widest text-xs px-5 py-2 rounded-full mb-3 uppercase">
                 Orang Tua

@@ -17,7 +17,7 @@
 </head>
 <body class="bg-[#F8FAFC] text-gray-800 font-quicksand flex min-h-screen overflow-hidden">
 
-    <aside class="w-64 bg-white border-r border-gray-100 flex flex-col justify-between h-screen fixed left-0 top-0 z-50 shadow-sm">
+    <aside class="w-70 bg-white border-r border-gray-100 flex flex-col justify-between h-screen fixed left-0 top-0 z-50 shadow-sm">
 
         <div class="px-8 py-10 overflow-y-auto no-scrollbar">
 

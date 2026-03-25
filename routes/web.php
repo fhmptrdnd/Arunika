@@ -31,11 +31,22 @@ Route::post('/profil/update-kode-sekolah', [ProfileController::class, 'updateSch
 Route::post('/keluar', [AuthController::class, 'logout'])->name('logout');
 
 // Middleware
-Route::get('/beranda', function () {
-    if (Auth::check()){
+Route::get('/', function () {
+    if (!Auth::check()) {
+        return redirect()->route('login');
+    }
+
+    $role = Auth::user()->role;
+
+    if ($role === 'admin') {
+        return redirect()->route('admin.dashboard');
+    // } elseif ($role === 'guru') {
+    //     return redirect()->route('guru.dashboard');
+    } elseif ($role === 'parent') {
+        return redirect()->route('parent.profil');
+    } else {
         return redirect()->route('beranda');
     }
-    return redirect()->route('login');
 });
 
 Route::middleware(['auth', IsAdmin::class])->prefix('admin')->name('admin.')->group(function () {
@@ -101,7 +112,7 @@ Route::get('/orangtua/profil', function (Illuminate\Http\Request $request) {
 Route::get('/switch-account/{id}', [App\Http\Controllers\AuthController::class, 'switchAccount'])->middleware('auth')->name('switch.account');
 
 // Beranda
-Route::get('/', function () {
+Route::get('/beranda', function () {
     return view('beranda');
 })->middleware('auth')->name('beranda');
 

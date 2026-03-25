@@ -153,14 +153,7 @@ class AuthController extends Controller
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
-            $role = Auth::user()->role;
-            if ($role === 'admin') {
-                return redirect()->intended('/admin/dashboard');
-            } elseif ($role === 'parent') {
-                return redirect()->intended('/orangtua/profil');
-            } else {
-                return redirect()->intended('/beranda');
-            }
+            return redirect('/');
         }
 
         return back()->withErrors([
