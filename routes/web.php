@@ -7,6 +7,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\MapelController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\ScoreController;
 use App\Http\Controllers\GuruController;
 use App\Http\Middleware\IsAdmin;
 use App\Http\Middleware\IsGuru;
@@ -33,6 +34,12 @@ Route::post('/profil/update-kode-sekolah', [ProfileController::class, 'updateSch
 
 Route::post('/keluar', [AuthController::class, 'logout'])->name('logout');
 
+// Middleware
+Route::get('/beranda', function () {
+    if (Auth::check()) {
+        return redirect()->route('beranda');
+    }
+    return redirect()->route('login');
 // Beranda route (single entrypoint for authenticated users)
 Route::get('/', function () {
     return view('beranda');
@@ -62,7 +69,6 @@ Route::middleware(['auth', IsAdmin::class])->prefix('admin')->name('admin.')->gr
     Route::post('/manajemen-kelas/{id}/hapus-guru', [AdminController::class, 'hapusGuruMapel'])->name('kelas.hapus-guru-mapel');
 
     Route::get('/profil', [AdminController::class, 'profil'])->name('profil');
-
 });
 
 Route::middleware(['auth', IsGuru::class])->prefix('guru')->name('guru.')->group(function () {
@@ -143,7 +149,8 @@ Route::get('/mapel/peminatan', [MapelController::class, 'peminatan'])->middlewar
 Route::get('/mapel/lainnya', [MapelController::class, 'lainnya'])->middleware('auth')->name('mapel.lainnya');
 
 // Level
-Route::get('/mapel/{slug}/level', [MapelController::class, 'showLevels'])->middleware('auth')->name('mapel.levels');
+// Route::get('/mapel/{slug}/level', [MapelController::class, 'showLevels'])->middleware('auth')->name('mapel.levels');
+Route::get('/mapel/{slug}/level/{kelas}', [MapelController::class, 'showLevels'])->middleware('auth')->name('mapel.levels');
 
 // Riwayat & Statistik
 Route::get('/riwayat', function () {
@@ -153,3 +160,82 @@ Route::get('/riwayat', function () {
 Route::get('/placeholder', function () {
     return view('placeholder', ['title' => 'Halaman Placeholder']);
 })->name('placeholder');
+
+
+// MAPEL
+Route::get('/indonesia/kelas-1/level-1', function () {
+    return view('mapel.1.indo.1', ['mapel' => ['slug' => 'bahasa-indonesia'], 'kelas' => 'Kelas 1']);
+})->name('mapel.indo.1.1');
+Route::get('/indonesia/kelas-1/level-2', function () {
+    return view('mapel.1.indo.2', ['mapel' => ['slug' => 'bahasa-indonesia'], 'kelas' => 'Kelas 2']);
+})->name('mapel.indo.1.2');
+
+Route::get('/matematika/kelas-1/level-1', function () {
+    return view('mapel.1.matematika.1', ['mapel' => ['slug' => 'matematika'], 'kelas' => 'Kelas 1']);
+})->name('mapel.matematika.1.1');
+Route::get('/matematika/kelas-1/level-2', function () {
+    return view('mapel.1.matematika.2', ['mapel' => ['slug' => 'matematika'], 'kelas' => 'Kelas 1']);
+})->name('mapel.matematika.1.2');
+
+Route::get('/pkn/kelas-1/level-1', function () {
+    return view('mapel.1.pkn.1', ['mapel' => ['slug' => 'pkn'], 'kelas' => 'Kelas 1']);
+})->name('mapel.pkn.1.1');
+Route::get('/pkn/kelas-1/level-2', function () {
+    return view('mapel.1.pkn.2', ['mapel' => ['slug' => 'pkn'], 'kelas' => 'Kelas 1']);
+})->name('mapel.pkn.1.2');
+
+// Kelas 2
+Route::get('/bahasa-inggris/kelas-2/level-1', function () {
+    return view('mapel.2.big.1', ['mapel' => ['slug' => 'bahasa-inggris'], 'kelas' => 'Kelas 2']);
+})->name('mapel.big.2.1');
+Route::get('/bahasa-inggris/kelas-2/level-2', function () {
+    return view('mapel.2.big.2', ['mapel' => ['slug' => 'bahasa-inggris'], 'kelas' => 'Kelas 2']);
+})->name('mapel.big.2.2');
+
+Route::get('/matematika/kelas-2/level-1', function () {
+    return view('mapel.2.matematika.1', ['mapel' => ['slug' => 'matematika'], 'kelas' => 'Kelas 2']);
+})->name('mapel.mtk.2.1');
+Route::get('/matematika/kelas-2/level-2', function () {
+    return view('mapel.2.matematika.2', ['mapel' => ['slug' => 'matematika'], 'kelas' => 'Kelas 2']);
+})->name('mapel.mtk.2.2');
+
+Route::get('/indo/kelas-2/level-1', function () {
+    return view('mapel.2.indo.1', ['mapel' => ['slug' => 'indo'], 'kelas' => 'Kelas 2']);
+})->name('mapel.indo.2.1');
+Route::get('/indo/kelas-2/level-2', function () {
+    return view('mapel.2.indo.2', ['mapel' => ['slug' => 'indo'], 'kelas' => 'Kelas 2']);
+})->name('mapel.indo.2.2');
+
+
+// Kelas 3
+Route::get('/big/kelas-3/level-1', function () {
+    return view('mapel.3.big.1', ['mapel' => ['slug' => 'big'], 'kelas' => 'Kelas 3']);
+})->name('mapel.big.3.1');
+Route::get('/big/kelas-3/level-2', function () {
+    return view('mapel.3.big.2', ['mapel' => ['slug' => 'big'], 'kelas' => 'Kelas 3']);
+})->name('mapel.big.3.2');
+
+Route::get('/indo/kelas-3/level-1', function () {
+    return view('mapel.3.indo.1', ['mapel' => ['slug' => 'indo'], 'kelas' => 'Kelas 3']);
+})->name('mapel.indo.3.1');
+Route::get('/indo/kelas-3/level-2', function () {
+    return view('mapel.3.indo.2', ['mapel' => ['slug' => 'indo'], 'kelas' => 'Kelas 3']);
+})->name('mapel.indo.3.2');
+
+Route::get('/matematika/kelas-3/level-1', function () {
+    return view('mapel.3.matematika.1', ['mapel' => ['slug' => 'matematika'], 'kelas' => 'Kelas 3']);
+})->name('mapel.mtk.3.1');
+Route::get('/matematika/kelas-3/level-2', function () {
+    return view('mapel.3.matematika.2', ['mapel' => ['slug' => 'matematika'], 'kelas' => 'Kelas 3']);
+})->name('mapel.mtk.3.2');
+
+// Siswa
+Route::put('/admin/siswa/{id}', [AdminController::class, 'editSiswa'])->name('admin.siswa.edit');
+Route::delete('/admin/siswa/{id}', [AdminController::class, 'hapusSiswa'])->name('admin.siswa.hapus');
+
+// Guru
+Route::put('/admin/guru/{id}', [AdminController::class, 'editGuru'])->name('admin.guru.edit');
+Route::delete('/admin/guru/{id}', [AdminController::class, 'hapusGuru'])->name('admin.guru.hapus');
+
+// Score
+Route::post('/save-score', [ScoreController::class, 'store']);

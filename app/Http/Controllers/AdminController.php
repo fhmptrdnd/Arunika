@@ -20,9 +20,9 @@ class AdminController extends Controller
         $totalGuru = User::where('role', 'guru')->where('school_code', $kodeSekolah)->count();
         $totalKelas = Classroom::where('school_code', $kodeSekolah)->count();
         $onlineUsers = User::where('school_code', $kodeSekolah)
-                           ->whereNotNull('last_seen_at')
-                           ->where('last_seen_at', '>=', now()->subMinutes(5))
-                           ->count();
+            ->whereNotNull('last_seen_at')
+            ->where('last_seen_at', '>=', now()->subMinutes(5))
+            ->count();
 
         return view('admin.dashboard', compact('totalSiswa', 'totalGuru', 'totalKelas', 'onlineUsers'));
     }
@@ -34,19 +34,47 @@ class AdminController extends Controller
         $search = $request->input('search');
 
         $query = User::where('role', 'student')
-                     ->where('school_code', $admin->school_code);
+            ->where('school_code', $admin->school_code);
 
         if ($search) {
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('username', 'like', "%{$search}%")
-                  ->orWhere('kelas', 'like', "%{$search}%");
+                    ->orWhere('username', 'like', "%{$search}%")
+                    ->orWhere('kelas', 'like', "%{$search}%");
             });
         }
 
         $siswa = $query->get();
 
         return view('admin.data-siswa', compact('siswa'));
+    }
+
+    public function editSiswa(Request $request, $id)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'username' => 'required|string|max:255|unique:users,username,' . $id,
+            'kelas' => 'nullable|string|max:50',
+        ]);
+
+        $siswa = User::findOrFail($id);
+
+        $siswa->update([
+            'name' => $request->name,
+            'username' => $request->username,
+            'kelas' => $request->kelas,
+        ]);
+
+        return back()->with('success', 'Data siswa berhasil diperbarui!');
+    }
+
+    public function hapusSiswa($id)
+    {
+        $siswa = User::findOrFail($id);
+
+        $siswa->delete();
+
+        return back()->with('success', 'Siswa berhasil dihapus!');
     }
 
     // HALAMAN DATA GURU
@@ -56,18 +84,41 @@ class AdminController extends Controller
         $search = $request->input('search');
 
         $query = User::where('role', 'guru')
-                     ->where('school_code', $admin->school_code);
+            ->where('school_code', $admin->school_code);
 
         if ($search) {
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%");
+                    ->orWhere('email', 'like', "%{$search}%");
             });
         }
 
         $guru = $query->get();
 
         return view('admin.data-guru', compact('guru'));
+    }
+    public function editGuru(Request $request, $id)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
+
+        $guru = User::findOrFail($id);
+
+        $guru->update([
+            'name' => $request->name,
+        ]);
+
+        return back()->with('success', 'Data Guru berhasil diperbarui!');
+    }
+
+    public function hapusGuru($id)
+    {
+        $guru = User::findOrFail($id);
+
+        $guru->delete();
+
+        return back()->with('success', 'Guru berhasil dihapus!');
     }
 
     // 4. HALAMAN MANAJEMEN KELAS
@@ -76,8 +127,8 @@ class AdminController extends Controller
         $admin = Auth::user();
 
         $kelas = Classroom::with('homeroomTeacher')
-                          ->where('school_code', $admin->school_code)
-                          ->get();
+            ->where('school_code', $admin->school_code)
+            ->get();
 
         $semuaGuru = User::where('role', 'guru')->where('school_code', $admin->school_code)->get();
 
@@ -102,7 +153,7 @@ class AdminController extends Controller
             'homeroom_teacher_id' => $request->homeroom_teacher_id,
         ]);
 
-        return redirect()->back()->with('success', 'Kelas '.$request->name.' berhasil dibuat!');
+        return redirect()->back()->with('success', 'Kelas ' . $request->name . ' berhasil dibuat!');
     }
 
     // HALAMAN KELOLA KELAS SPESIFIK
@@ -111,15 +162,17 @@ class AdminController extends Controller
         $admin = Auth::user();
         $kelas = Classroom::with(['homeroomTeacher', 'subjectTeachers'])->findOrFail($id);
 
-        if ($kelas->school_code !== $admin->school_code) { abort(403); }
+        if ($kelas->school_code !== $admin->school_code) {
+            abort(403);
+        }
 
         $siswaDiKelas = User::where('role', 'student')->where('school_code', $admin->school_code)->where('kelas', $kelas->name)->get();
 
         $siswaTersedia = User::where('role', 'student')
-                             ->where('school_code', $admin->school_code)
-                             ->where(function($query) use ($kelas) {
-                                 $query->where('kelas', '!=', $kelas->name)->orWhereNull('kelas');
-                             })->get();
+            ->where('school_code', $admin->school_code)
+            ->where(function ($query) use ($kelas) {
+                $query->where('kelas', '!=', $kelas->name)->orWhereNull('kelas');
+            })->get();
 
         $semuaGuru = User::where('role', 'guru')->where('school_code', $admin->school_code)->get();
         $semuaMapel = \App\Models\Subject::all();
@@ -151,7 +204,7 @@ class AdminController extends Controller
         $sudahAda = \Illuminate\Support\Facades\DB::table('classroom_teachers')
             ->where('classroom_id', $kelas->id)->where('teacher_id', $request->teacher_id)->where('subject_id', $request->subject_id)->exists();
 
-        if($sudahAda) {
+        if ($sudahAda) {
             return back()->withErrors(['Guru tersebut sudah mengajar mata pelajaran ini di kelas ini!']);
         }
 
@@ -191,7 +244,7 @@ class AdminController extends Controller
             'streak' => 0,
         ]);
 
-        return redirect()->back()->with('success', 'Siswa '.$request->name.' berhasil didaftarkan!');
+        return redirect()->back()->with('success', 'Siswa ' . $request->name . ' berhasil didaftarkan!');
     }
 
     // FUNGSI TAMBAH GURU MANUAL
@@ -216,7 +269,7 @@ class AdminController extends Controller
             'school_name' => $admin->school_name,
         ]);
 
-        return redirect()->back()->with('success', 'Guru '.$request->name.' berhasil didaftarkan!');
+        return redirect()->back()->with('success', 'Guru ' . $request->name . ' berhasil didaftarkan!');
     }
 
     public function profil()
