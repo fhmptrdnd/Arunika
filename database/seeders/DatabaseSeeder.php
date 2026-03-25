@@ -173,5 +173,7 @@ class DatabaseSeeder extends Seeder
                 }
             }
         }
+        // seeder placement test questions 
+        $this->call(PlacementQuestionSeeder::class);
     }
 }
