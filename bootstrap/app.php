@@ -16,6 +16,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(append: [
             \App\Http\Middleware\UpdateLastSeen::class,
         ]);
+        $middleware->alias([
+        'placement.done' => \App\Http\Middleware\IsPlacementDone::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->renderable(function (AuthenticationException $e, Request $request) {

@@ -32,7 +32,7 @@
 
     <nav class="p-3 flex justify-between items-center sticky top-0 z-100 bg-white shadow-2xl">
         <div class="flex ml-5 items-center gap-3">
-            <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-xl shadow-md">🎓</div>
+            <img src="{{ asset('images/Logo2.png') }}" class="w-10 h-8 bg-white flex items-center justify-center text-xl">
             <span class="text-darkblue dark:text-darkblue text-xl font-bold">Arunika</span>
         </div>
 
@@ -47,9 +47,10 @@
             @endguest
 
             @auth
-            <a href="{{ route('placeholder') }}" class="bg-yellow text-darkblue font-bold px-4 py-2 hover:bg-yellow-400 transition rounded-full shadow-md">7 🔥</a>
+            <a href="{{ route('placeholder') }}" class="bg-yellow text-darkblue font-bold px-4 py-2 hover:bg-yellow-400 transition rounded-full shadow-md">1 🔥</a>
             <a href="{{ route('profile') }}" class="bg-darkblue text-white font-bold px-6 py-2 rounded-full hover:bg-blue-800 transition shadow-md">Profil</a>
             <a href="{{ route('placeholder') }}" class="bg-orange text-white font-bold px-6 py-2 rounded-full hover:bg-orange-600 transition shadow-md">Riwayat</a>
+            <a href="{{ route('siswa.perkembangan') }}" class="bg-teal text-white font-bold px-4 py-2 rounded-full hover:bg-teal/80 transition shadow-md">Perkembangan</a>
             <form action="{{ route('logout') }}" method="POST" class="inline m-0 p-0">
                 @csrf
                 <button type="submit" class="bg-gray-300 text-darkblue font-bold px-6 py-2 rounded-full hover:bg-red-400 hover:text-white transition shadow-md cursor-pointer border-none outline-none">

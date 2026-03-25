@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Orang Tua - Arunika</title>
     @vite('resources/css/app.css')
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -19,29 +22,30 @@
         <div class="px-8 py-10 overflow-y-auto no-scrollbar">
             <a href="#" class="flex items-center gap-4 mb-12 no-underline">
                 <div class="w-10 h-10 flex items-center justify-center">
-                    <img src="{{ asset('images/logo-arunika.png') }}" alt="Logo" class="w-full h-full object-contain">
+                    <img src="{{ asset('images/Logo2.png') }}" class="w-10 h-8 bg-white flex items-center justify-center text-xl">
                 </div>
                 <span class="text-darkblue text-2xl font-bold">Arunika</span>
             </a>
 
             <nav class="flex flex-col gap-3">
-                <a href="#" class="flex items-center gap-4 bg-[#F8FAFC] text-[#12A0D7] hover:bg-blue-50 px-6 py-4 rounded-full font-bold transition-colors no-underline">
-                    <img src="{{ asset('images/icon-beranda-biru.png') }}" class="w-6 h-6 opacity-80"> Beranda
+                <a href="{{ route('parent.dashboard') }}" class="flex items-center gap-4 px-6 py-4 rounded-full font-bold transition-all no-underline {{ request()->routeIs('parent.dashboard') ? 'bg-[#12A0D7] text-white shadow-[0_4px_15px_rgba(18,160,215,0.3)]' : 'bg-[#F8FAFC] text-[#12A0D7] hover:bg-blue-50 group' }}">
+                    <i class="bi {{ request()->routeIs('parent.dashboard') ? 'bi-house-door-fill' : 'bi-house-door opacity-80 group-hover:opacity-100' }} text-2xl leading-none"></i>
+                    <span class="text-lg">Beranda</span>
                 </a>
-                <a href="#" class="flex items-center gap-4 bg-[#F8FAFC] text-[#12A0D7] hover:bg-blue-50 px-6 py-4 rounded-full font-bold transition-colors no-underline">
-                    <img src="{{ asset('images/icon-game-biru.png') }}" class="w-6 h-6 opacity-80"> Petualangan
+
+                <a href="{{ route('parent.riwayat') }}" class="flex items-center gap-4 px-6 py-4 rounded-full font-bold transition-all no-underline {{ request()->routeIs('parent.riwayat') ? 'bg-[#12A0D7] text-white shadow-[0_4px_15px_rgba(18,160,215,0.3)]' : 'bg-[#F8FAFC] text-[#12A0D7] hover:bg-blue-50 group' }}">
+                    <i class="bi {{ request()->routeIs('parent.riwayat') ? 'bi-award-fill' : 'bi-award opacity-80 group-hover:opacity-100' }} text-2xl leading-none"></i>
+                    <span class="text-lg">Riwayat & Capaian</span>
                 </a>
-                <a href="#" class="flex items-center gap-4 bg-[#F8FAFC] text-[#12A0D7] hover:bg-blue-50 px-6 py-4 rounded-full font-bold transition-colors no-underline">
-                    <img src="{{ asset('images/icon-tugas-biru.png') }}" class="w-6 h-6 opacity-80"> Tugas & Tantangan
+
+                <a href="{{ route('parent.perkembangan') }}" class="flex items-center gap-4 px-6 py-4 rounded-full font-bold transition-all no-underline {{ request()->routeIs('parent.perkembangan') ? 'bg-[#12A0D7] text-white shadow-[0_4px_15px_rgba(18,160,215,0.3)]' : 'bg-[#F8FAFC] text-[#12A0D7] hover:bg-blue-50 group' }}">
+                    <i class="bi {{ request()->routeIs('parent.perkembangan') ? 'bi-bar-chart-fill' : 'bi-bar-chart opacity-80 group-hover:opacity-100' }} text-2xl leading-none"></i>
+                    <span class="text-lg">Perkembangan</span>
                 </a>
-                <a href="#" class="flex items-center gap-4 bg-[#F8FAFC] text-[#12A0D7] hover:bg-blue-50 px-6 py-4 rounded-full font-bold transition-colors no-underline">
-                    <img src="{{ asset('images/icon-riwayat-biru.png') }}" class="w-6 h-6 opacity-80"> Riwayat & Capaian
-                </a>
-                <a href="#" class="flex items-center gap-4 bg-[#F8FAFC] text-[#12A0D7] hover:bg-blue-50 px-6 py-4 rounded-full font-bold transition-colors no-underline">
-                    <img src="{{ asset('images/icon-grafik-biru.png') }}" class="w-6 h-6 opacity-80"> Perkembangan
-                </a>
-                <a href="{{ route('parent.profil') }}" class="flex items-center gap-4 bg-[#12A0D7] text-white px-6 py-4 rounded-full font-bold transition-all shadow-md no-underline">
-                    <img src="{{ asset('images/icon-profil-putih.png') }}" class="w-6 h-6"> Profil
+
+                <a href="{{ route('parent.profil') }}" class="flex items-center gap-4 px-6 py-4 rounded-full font-bold transition-all no-underline {{ request()->routeIs('parent.profil') ? 'bg-[#12A0D7] text-white shadow-[0_4px_15px_rgba(18,160,215,0.3)]' : 'bg-[#F8FAFC] text-[#12A0D7] hover:bg-blue-50 group' }}">
+                    <i class="bi {{ request()->routeIs('parent.profil') ? 'bi-person-circle' : 'bi-person-circle opacity-80 group-hover:opacity-100' }} text-2xl leading-none"></i>
+                    <span class="text-lg">Profil</span>
                 </a>
             </nav>
         </div>

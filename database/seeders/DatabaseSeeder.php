@@ -38,6 +38,12 @@ class DatabaseSeeder extends Seeder
         $mapelSeni = Subject::create(['name' => 'Seni Budaya', 'type' => 'lainnya', 'icon' => '🎨', 'color' => 'bg-pink-100']);
         $mapelOlahraga = Subject::create(['name' => 'Pendidikan Jasmani', 'type' => 'lainnya', 'icon' => '⚽', 'color' => 'bg-orange-100']);
 
+        // ada mapel yang kurang
+        $mapelBindo = Subject::create(['name' => 'Bahasa Indonesia',     'type' => 'lainnya',   'icon' => '📖', 'color' => 'bg-sky-100']);
+        $mapelPancasila = Subject::create(['name' => 'Pendidikan Pancasila', 'type' => 'lainnya',   'icon' => '⚖️', 'color' => 'bg-rose-100']);
+        $mapelMuatanLokal = Subject::create(['name' => 'Muatan Lokal',         'type' => 'lainnya',   'icon' => '🌍', 'color' => 'bg-amber-100']);
+        $mapelAgama = Subject::create(['name' => 'Pendidikan Agama',     'type' => 'lainnya',   'icon' => '🕌', 'color' => 'bg-emerald-100']);
+        
         // ==========================================
         // 3. BUAT AKUN GURU
         // ==========================================
@@ -138,5 +144,36 @@ class DatabaseSeeder extends Seeder
             'xp' => 200,
             'streak' => 4,
         ]);
+
+        // ==========================================
+        // 7. SEED SKOR MAPEL (DUMMY PLACEMENT TEST)
+        // ==========================================
+        $semuaMapel = Subject::all()->keyBy('name');
+
+        $skorHanni = [
+            'Matematika'          => 88,
+            'Bahasa Indonesia'    => 71,
+            'Bahasa Inggris'      => 74,
+            'Pendidikan Pancasila'=> 71,
+            'Seni Budaya'         => 65,
+            'Pendidikan Jasmani'  => 50,
+        ];
+
+        $hanni = \App\Models\User::where('username', 'hanni123')->first();
+
+        if ($hanni) {
+            foreach ($skorHanni as $namaMapel => $skor) {
+                if ($semuaMapel->has($namaMapel)) {
+                    \App\Models\SubjectScore::create([
+                        'student_id' => $hanni->id,
+                        'subject_id' => $semuaMapel[$namaMapel]->id,
+                        'score'      => $skor,
+                        'source'     => 'placement_test',
+                    ]);
+                }
+            }
+        }
+        // seeder placement test questions 
+        $this->call(PlacementQuestionSeeder::class);
     }
 }

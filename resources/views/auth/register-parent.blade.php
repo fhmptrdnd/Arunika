@@ -71,9 +71,6 @@
                                     <option value="Kelas 1">Kelas 1 SD</option>
                                     <option value="Kelas 2">Kelas 2 SD</option>
                                     <option value="Kelas 3">Kelas 3 SD</option>
-                                    <option value="Kelas 4">Kelas 4 SD</option>
-                                    <option value="Kelas 5">Kelas 5 SD</option>
-                                    <option value="Kelas 6">Kelas 6 SD</option>
                                 </select>
                             </div>
                         </div>
@@ -84,8 +81,6 @@
                 <button type="button" onclick="addChildForm()" class="text-[#12A0D7] font-bold text-sm bg-blue-50 py-3 rounded-full border-2 border-dashed border-[#12A0D7] hover:bg-blue-100 transition-colors mt-2">
                     + Tambah Anak Lainnya
                 </button>
-
-                {{-- <button type="submit" class="...">Daftar</button> --}}
 
                 <div>
                     <label class="block text-gray-500 mb-1 text-sm font-semibold ml-2">Kode Kelas (Opsional)</label>

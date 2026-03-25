@@ -56,6 +56,36 @@ class User extends Authenticatable
         return $this->belongsTo(User::class, 'parent_id');
     }
 
+    // tugas dari guru
+    public function assignmentsCreated()
+    {
+        return $this->hasMany(Assignment::class, 'teacher_id');
+    }
+
+    // submission dari siswa
+    public function submissions()
+    {
+        return $this->hasMany(AssignmentSubmission::class, 'student_id');
+    }
+
+    // skor mapel siswa
+    public function subjectScores()
+    {
+        return $this->hasMany(SubjectScore::class, 'student_id');
+    }
+
+    // catatan siswa
+    public function teacherNotes()
+    {
+        return $this->hasMany(TeacherNote::class, 'student_id');
+    }
+
+    // catatan guru
+    public function notesWritten()
+    {
+        return $this->hasMany(TeacherNote::class, 'teacher_id');
+    }
+
     /**
      * The attributes that should be hidden for serialization.
      *

@@ -7,8 +7,14 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\MapelController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\ScoreController;
+use App\Http\Controllers\GuruController;
 use App\Http\Middleware\IsAdmin;
+use App\Http\Middleware\IsGuru;
+use App\Http\Controllers\SiswaController;
 use GuzzleHttp\Middleware;
+use App\Http\Controllers\PlacementController;
+use App\Http\Controllers\ParentController;
 
 // Auth
 Route::get('/masuk', [AuthController::class, 'login'])->name('login');
@@ -40,13 +46,22 @@ Route::get('/', function () {
 
     if ($role === 'admin') {
         return redirect()->route('admin.dashboard');
-    // } elseif ($role === 'guru') {
-    //     return redirect()->route('guru.dashboard');
+    } elseif ($role === 'guru') {
+        return redirect()->route('guru.dashboard');
     } elseif ($role === 'parent') {
         return redirect()->route('parent.profil');
     } else {
+        // Jika student, lempar ke beranda
         return redirect()->route('beranda');
     }
+});
+
+Route::get('/beranda', function () {
+    return view('beranda');
+})->middleware(['auth', 'placement.done'])->name('beranda');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/perkembangan', [SiswaController::class, 'perkembangan'])->name('siswa.perkembangan');
 });
 
 Route::middleware(['auth', IsAdmin::class])->prefix('admin')->name('admin.')->group(function () {
@@ -69,7 +84,28 @@ Route::middleware(['auth', IsAdmin::class])->prefix('admin')->name('admin.')->gr
     Route::post('/manajemen-kelas/{id}/hapus-guru', [AdminController::class, 'hapusGuruMapel'])->name('kelas.hapus-guru-mapel');
 
     Route::get('/profil', [AdminController::class, 'profil'])->name('profil');
+});
 
+Route::middleware(['auth', IsGuru::class])->prefix('guru')->name('guru.')->group(function () {
+    Route::get('/dashboard', [GuruController::class, 'dashboard'])->name('dashboard');
+    Route::get('/siswa-kelas', [GuruController::class, 'siswaKelas'])->name('siswa');
+    Route::get('/siswa-kelas/{id}', [GuruController::class, 'profilSiswa'])->name('siswa.profil');
+    Route::post('/siswa-kelas/{id}/catatan', [GuruController::class, 'simpanCatatan'])->name('siswa.catatan');
+
+    // TUGAS
+    Route::get('/kelola-tugas', [GuruController::class, 'kelolaTugas'])->name('tugas');
+    Route::post('/kelola-tugas', [GuruController::class, 'buatTugas'])->name('tugas.buat');
+    Route::get('/kelola-tugas/{id}', [GuruController::class, 'detailTugas'])->name('tugas.detail');
+    Route::post('/kelola-tugas/{id}/tutup', [GuruController::class, 'tutupTugas'])->name('tugas.tutup');
+
+    Route::get('/profil', [GuruController::class, 'profil'])->name('profil');
+});
+// PLACEMENT TEST STUDENT (non-admin routes)
+Route::middleware('auth')->group(function () {
+    Route::get('/placement-test',         [PlacementController::class, 'intro'])  ->name('placement.intro');
+    Route::get('/placement-test/mulai',   [PlacementController::class, 'start'])  ->name('placement.start');
+    Route::post('/placement-test/submit', [PlacementController::class, 'submit']) ->name('placement.submit');
+    Route::get('/placement-test/hasil',   [PlacementController::class, 'result']) ->name('placement.result');
 });
 
 // // Admin Dashboard
@@ -108,13 +144,24 @@ Route::get('/orangtua/profil', function (Illuminate\Http\Request $request) {
     if ($request->user()->role !== 'parent') return redirect('/beranda');
     return view('parent.profile');
 })->middleware('auth')->name('parent.profil');
+
+// Menu ORtu
+Route::middleware(['auth'])->group(function () {
+    Route::get('/parent/dashboard', [ParentController::class, 'dashboard'])->name('parent.dashboard');
+    Route::get('/parent/riwayat', [ParentController::class, 'riwayat'])->name('parent.riwayat');
+    Route::get('/parent/perkembangan', [ParentController::class, 'perkembangan'])->name('parent.perkembangan');
+    Route::post('/parent/tambah-anak', [ParentController::class, 'storeChild'])->name('parent.store_child');
+    Route::post('/parent/update-school', [ParentController::class, 'updateSchoolCode'])->name('parent.update_school');
+
+});
+
 // Switch Account
 Route::get('/switch-account/{id}', [App\Http\Controllers\AuthController::class, 'switchAccount'])->middleware('auth')->name('switch.account');
 
-// Beranda
-Route::get('/beranda', function () {
-    return view('beranda');
-})->middleware('auth')->name('beranda');
+// // Beranda
+// Route::get('/beranda', function () {
+//     return view('beranda');
+// })->middleware('auth')->name('beranda');
 
 // Mapel Peminatan
 // Route::get('/mapel-peminatan', function () {
@@ -129,7 +176,8 @@ Route::get('/mapel/peminatan', [MapelController::class, 'peminatan'])->middlewar
 Route::get('/mapel/lainnya', [MapelController::class, 'lainnya'])->middleware('auth')->name('mapel.lainnya');
 
 // Level
-Route::get('/mapel/{slug}/level', [MapelController::class, 'showLevels'])->middleware('auth')->name('mapel.levels');
+// Route::get('/mapel/{slug}/level', [MapelController::class, 'showLevels'])->middleware('auth')->name('mapel.levels');
+Route::get('/mapel/{slug}/level/{kelas}', [MapelController::class, 'showLevels'])->middleware('auth')->name('mapel.levels');
 
 // Riwayat & Statistik
 Route::get('/riwayat', function () {
@@ -139,3 +187,82 @@ Route::get('/riwayat', function () {
 Route::get('/placeholder', function () {
     return view('placeholder', ['title' => 'Halaman Placeholder']);
 })->name('placeholder');
+
+
+// MAPEL
+Route::get('/indonesia/kelas-1/level-1', function () {
+    return view('mapel.1.indo.1', ['mapel' => ['slug' => 'bahasa-indonesia'], 'kelas' => 'Kelas 1']);
+})->name('mapel.indo.1.1');
+Route::get('/indonesia/kelas-1/level-2', function () {
+    return view('mapel.1.indo.2', ['mapel' => ['slug' => 'bahasa-indonesia'], 'kelas' => 'Kelas 2']);
+})->name('mapel.indo.1.2');
+
+Route::get('/matematika/kelas-1/level-1', function () {
+    return view('mapel.1.matematika.1', ['mapel' => ['slug' => 'matematika'], 'kelas' => 'Kelas 1']);
+})->name('mapel.mtk.1.1');
+Route::get('/matematika/kelas-1/level-2', function () {
+    return view('mapel.1.matematika.2', ['mapel' => ['slug' => 'matematika'], 'kelas' => 'Kelas 1']);
+})->name('mapel.mtk.1.2');
+
+Route::get('/pkn/kelas-1/level-1', function () {
+    return view('mapel.1.pkn.1', ['mapel' => ['slug' => 'pkn'], 'kelas' => 'Kelas 1']);
+})->name('mapel.pkn.1.1');
+Route::get('/pkn/kelas-1/level-2', function () {
+    return view('mapel.1.pkn.2', ['mapel' => ['slug' => 'pkn'], 'kelas' => 'Kelas 1']);
+})->name('mapel.pkn.1.2');
+
+// Kelas 2
+Route::get('/bahasa-inggris/kelas-2/level-1', function () {
+    return view('mapel.2.big.1', ['mapel' => ['slug' => 'bahasa-inggris'], 'kelas' => 'Kelas 2']);
+})->name('mapel.big.2.1');
+Route::get('/bahasa-inggris/kelas-2/level-2', function () {
+    return view('mapel.2.big.2', ['mapel' => ['slug' => 'bahasa-inggris'], 'kelas' => 'Kelas 2']);
+})->name('mapel.big.2.2');
+
+Route::get('/matematika/kelas-2/level-1', function () {
+    return view('mapel.2.matematika.1', ['mapel' => ['slug' => 'matematika'], 'kelas' => 'Kelas 2']);
+})->name('mapel.mtk.2.1');
+Route::get('/matematika/kelas-2/level-2', function () {
+    return view('mapel.2.matematika.2', ['mapel' => ['slug' => 'matematika'], 'kelas' => 'Kelas 2']);
+})->name('mapel.mtk.2.2');
+
+Route::get('/indo/kelas-2/level-1', function () {
+    return view('mapel.2.indo.1', ['mapel' => ['slug' => 'indo'], 'kelas' => 'Kelas 2']);
+})->name('mapel.indo.2.1');
+Route::get('/indo/kelas-2/level-2', function () {
+    return view('mapel.2.indo.2', ['mapel' => ['slug' => 'indo'], 'kelas' => 'Kelas 2']);
+})->name('mapel.indo.2.2');
+
+
+// Kelas 3
+Route::get('/big/kelas-3/level-1', function () {
+    return view('mapel.3.big.1', ['mapel' => ['slug' => 'big'], 'kelas' => 'Kelas 3']);
+})->name('mapel.big.3.1');
+Route::get('/big/kelas-3/level-2', function () {
+    return view('mapel.3.big.2', ['mapel' => ['slug' => 'big'], 'kelas' => 'Kelas 3']);
+})->name('mapel.big.3.2');
+
+Route::get('/indo/kelas-3/level-1', function () {
+    return view('mapel.3.indo.1', ['mapel' => ['slug' => 'indo'], 'kelas' => 'Kelas 3']);
+})->name('mapel.indo.3.1');
+Route::get('/indo/kelas-3/level-2', function () {
+    return view('mapel.3.indo.2', ['mapel' => ['slug' => 'indo'], 'kelas' => 'Kelas 3']);
+})->name('mapel.indo.3.2');
+
+Route::get('/matematika/kelas-3/level-1', function () {
+    return view('mapel.3.matematika.1', ['mapel' => ['slug' => 'matematika'], 'kelas' => 'Kelas 3']);
+})->name('mapel.mtk.3.1');
+Route::get('/matematika/kelas-3/level-2', function () {
+    return view('mapel.3.matematika.2', ['mapel' => ['slug' => 'matematika'], 'kelas' => 'Kelas 3']);
+})->name('mapel.mtk.3.2');
+
+// Siswa
+Route::put('/admin/siswa/{id}', [AdminController::class, 'editSiswa'])->name('admin.siswa.edit');
+Route::delete('/admin/siswa/{id}', [AdminController::class, 'hapusSiswa'])->name('admin.siswa.hapus');
+
+// Guru
+Route::put('/admin/guru/{id}', [AdminController::class, 'editGuru'])->name('admin.guru.edit');
+Route::delete('/admin/guru/{id}', [AdminController::class, 'hapusGuru'])->name('admin.guru.hapus');
+
+// Score
+Route::post('/save-score', [ScoreController::class, 'store']);

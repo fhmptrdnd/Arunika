@@ -22,7 +22,7 @@
         <div class="px-8 py-10 overflow-y-auto no-scrollbar">
 
             <a href="#" class="flex items-center gap-4 mb-12 no-underline">
-                <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-xl shadow-md">🎓</div>
+                <img src="{{ asset('images/Logo2.png') }}" class="w-10 h-10 bg-white flex items-center justify-center text-xl">
                 <span class="text-darkblue text-2xl font-bold">Arunika</span>
             </a>
 
@@ -60,7 +60,7 @@
             <form action="{{ route('logout') }}" method="POST" class="inline m-0 p-0 items-center">
                 @csrf
                 <button type="submit" class="w-full bg-gray-100 text-gray-500 font-bold px-6 py-3 rounded-full hover:bg-red-50 hover:text-red-500 transition shadow-sm flex justify-center items-center gap-2 cursor-pointer border-none outline-none">
-                    <i class="bi bi-box-arrow-right text-xl"></i> Keluar
+                    Keluar
                 </button>
             </form>
         </div>

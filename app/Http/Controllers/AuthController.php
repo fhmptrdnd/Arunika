@@ -127,9 +127,18 @@ class AuthController extends Controller
             ]);
         }
 
-        Auth::login($parent);
+        $firstChild = User::where('parent_id', $parent->id)->where('role', 'student')->first();
+
+        if ($firstChild) {
+            Auth::login($firstChild);
+            return redirect()->route('placement.intro');
+        }
 
         return redirect('/orangtua/profil');
+
+        // Auth::login($parent);
+
+        // return redirect('/orangtua/profil');
     }
 
     // LOGIN
@@ -153,7 +162,20 @@ class AuthController extends Controller
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
-            return redirect('/');
+            $role = Auth::user()->role;
+            if ($role === 'admin') {
+                return redirect()->intended('/admin/dashboard');
+            } elseif ($role === 'guru') {
+                return redirect()->intended('/guru/dashboard');
+            } elseif ($role === 'parent') {
+                return redirect()->intended('/orangtua/profil');
+            } else { // UDAH TES BLM
+                $sudahTest = \App\Models\PlacementResult::where('student_id', Auth::id())->exists();
+                if (!$sudahTest) {
+                    return redirect()->route('placement.intro');
+                }
+                return redirect()->intended('/beranda');
+            }
         }
 
         return back()->withErrors([
@@ -171,6 +193,10 @@ class AuthController extends Controller
 
             if ($child) {
                 Auth::login($child);
+                $sudahTest = \App\Models\PlacementResult::where('student_id', $child->id)->exists();
+                if (!$sudahTest) {
+                    return redirect()->route('placement.intro');
+                }
                 return redirect('/beranda');
             }
         }
