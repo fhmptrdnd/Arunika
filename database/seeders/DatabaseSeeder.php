@@ -138,5 +138,8 @@ class DatabaseSeeder extends Seeder
             'xp' => 200,
             'streak' => 4,
         ]);
+
+        // seeder placement test questions 
+        $this->call(PlacementQuestionSeeder::class);
     }
 }
