@@ -30,7 +30,7 @@
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <p class="text-gray-500 text-lg">Kelola pembagian kelas, wali kelas, dan guru mata pelajaran di sini.</p>
         <button onclick="openModalTambahKelas()" class="bg-[#12A0D7] text-white px-6 py-3 rounded-full font-bold hover:bg-blue-600 transition-colors shadow-md flex items-center gap-2 shrink-0 cursor-pointer">
-            <img src="{{ asset('images/icon-plus.png') }}" class="w-5 h-5"> Tambah Kelas
+            <span class="text-xl leading-none">+</span> Tambah Kelas
         </button>
     </div>
 
